@@ -1,0 +1,165 @@
+.banner {
+	background: url(../../assets/images/banner/banner-bg.jpg) no-repeat;
+	height: 770px;
+    background-size: cover;
+    background-position: left;
+	position: relative;
+	margin-top: 60px;
+	@include breakpoint(lg) {
+		background-position: center;
+		margin-top: 0;
+	}
+	@include breakpoint(max-lg) {
+		height: 600px;
+	}
+    .banner-area {
+    	@extend %position;
+    	top: 50%;
+    	left: 50%;
+    	width: 100%;
+		transform: translate(-50% , -50%);
+		@include breakpoint(xl) {
+			transform: translate(-50% , -65%);
+		}
+    	.banner-content {
+    		max-width: 635px;
+    		.banner-text {
+				margin-top: 0;
+				@include breakpoint(xl) {
+					font-size: $fs-h1;
+					line-height: $lh-h1;
+				}
+			}
+    		.banner-desc {
+				margin: 15px 0 54px;
+				@include breakpoint(lg) {
+					margin: 30px 0 54px;
+				}
+    		}
+    		form {
+    			@extend %flex;
+    			align-items: center;
+    			background: rgba(37, 51, 101, 0.12);
+    			border: 1px solid rgba(37, 51, 101, 0.18);
+    			padding: 13px;
+    			border-radius: 8px;
+    			box-shadow: 0px 8px 24px 0px rgba(37, 51, 101, 0.12);
+    			input, select {
+    				width: 100%;
+    				padding: 16.5px;
+					border: none;
+					font-size: 16px;
+					@include border-radius(3px);
+    				@include breakpoint(md) {
+    					width: 267px;
+    					margin-bottom: 0px !important;
+					}
+					&::-webkit-input-placeholder {
+						color: rgba(37, 51, 101, .50);
+					}
+    			}
+    			input {
+    				margin-bottom: 15px;
+    				@include breakpoint(md) {
+    					margin-right: 10px;
+    				}
+				}
+				.cus_sel {
+					position: relative;
+					background: $white-color;
+					@include border-radius(3px);
+					@include breakpoint(max-md) {
+						margin-bottom: 15px;
+						width: 100%;
+					}
+					&::after {
+						@extend %position;
+						content: "\f0dd" !important;
+						font-family: "Font Awesome 5 Free";
+						font-weight: 700;
+						font-size: 15px;
+						width: 10px;
+						height: 10px;
+						line-height: 10px;
+						top: 50%;
+						right: 15px;
+						color: rgba(37, 51, 101, .50);
+						transform: translateY(-50%);
+						@include breakpoint(xl) {
+							top: 45%;
+						}
+					}
+				}
+    			select {
+					color: rgba(37, 51, 101, .50);
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					margin-bottom: 0;
+    				option {
+    					color: $title-color;
+					}
+    			}
+    			button {
+    				width: 52px;
+    				height: 52px;
+    				line-height: 52px;
+    				color: $white-color;
+    				background: $theme-color;
+    				border-radius: 50%;
+    				text-align: center;
+					padding: 0;
+					@extend %pointer;
+    				@include breakpoint(md) {
+    					margin-left: 10px;
+    				}
+    			}
+    		}
+    	}
+    }
+    &.style-2 {
+    	background: url(../../assets/images/banner/bg-style2.png) no-repeat;
+	    background-size: cover;
+		background-position: right bottom;
+		@include breakpoint(xxl) {
+			height: 978px;
+		}
+		@include breakpoint(max-sm) {
+			height: 400px;
+		}
+	    .banner-area {
+	    	.banner-content {
+	    		margin: 0 auto;
+				text-align: center;
+				max-width: 750px;
+	    		.banner-text {
+	    			color: $white-color;
+	    		}
+	    		.banner-desc {
+					color: $white-color;
+					margin: 20px 0 52px;
+					@include breakpoint(max-sm) {
+						margin: 20px 0 30px;
+					}
+				}
+	    		.btn {
+	    			border: 2px solid $white-color;
+					background: transparent;
+					@include breakpoint(max-sm) {
+						background: $primary-color;
+						border: 2px solid $primary-color;
+						box-shadow: 0px 5px 15px 0px rgba(73, 188, 247, 0.5);
+					}
+					&:hover {
+						background: $theme-color;
+						border-color: $theme-color;
+						@include breakpoint(max-sm) {
+							background: $theme-color;
+							border: 2px solid $theme-color;
+							box-shadow: 0px 5px 15px 0px rgba(255, 137, 110, 0.5);
+						}
+					}
+	    		}
+	    	}
+	    }
+    }
+}

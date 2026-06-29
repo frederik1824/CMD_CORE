@@ -1,0 +1,789 @@
+/*!
+<----------------------------------------
+  Template Name: Lector
+  Template URI: http://labartisan.net/demo/lector/
+  Author: LabArtisan
+  Author URI: https://themeforest.net/user/labartisan
+  Description: Business Consulting HTML Template.
+  Version: 1.0.0
+  Tags: agency, blog, business, company, consultancy, Consulting Agency, corporate, creative, finance, marketing, portfolio, professional, responsive, template investment
+---------------------------------------->
+*/
+/*
+>>> TABLE OF CONTENTS:
+<----------------------------------------------------------------
+  01. header
+    * Main Menu
+    * Mobile Menu
+    * Page Header
+    * Breadcamp
+  02. Banner
+  03. Service
+    * Service Single
+  04. About
+  05. Progress
+  06. Case Study
+    * Case Study Single
+  07. Advisors
+  08. Testimonial
+  09. Faq
+  10. Achievement
+  11. Support
+  12. Blog
+  13. Product
+    * Related Poduct
+  14. Cart
+  15. Blog
+    * Blog Single
+  16. Contact Us
+    * Contact
+  17. Newsletter
+  18. video
+  19. consulting
+  20. Counter Up
+  21. Pricing
+  22. Sponsor
+  23. 404
+  24. Cooming Soon
+  25. Gmaps Section
+  26. Global css
+  27. Footer
+---------------------------------------------------------------->
+*/
+
+
+
+// header section startr here
+.header-section {
+	// position: relative;
+	// z-index: 99999;
+	.header-top {
+		background: $primary-color;
+		padding: 5px 0;
+		.htop-area {
+			justify-content: space-between;
+		    align-items: center;
+			.htop-left {
+				p {
+					color: $white-color;
+					margin-bottom: 0;
+					font-size: 15px;
+				}
+			}
+			.htop-right {
+				@extend %flex;
+				align-items: center;
+				justify-content: flex-end;
+				.htop-information {
+					margin: 0;
+					@extend %flex;
+					justify-content: space-between;
+					li {
+						color: $white-color;
+						font-size: 15px;
+						margin-right: 40px;
+						&:last-child {
+							margin-right: 20px;
+						}
+						a {
+							color: $white-color;
+						}
+					}
+				}
+				.social-link-list {
+					margin: 0;
+					li {
+						a {
+							width: 30px;
+							height: 30px;
+							line-height: 30px;
+						}
+					}
+				}
+			}
+		}
+	}
+	.header-bottom {
+		.search-cart {
+			width: 250px;
+		    justify-content: flex-end;
+			@extend %flex;
+			li {
+				position: relative;
+				margin-right: 30px;
+				cursor: pointer;
+				&.cart {
+					span {
+						width: 20px;
+						height: 20px;
+						line-height: 20px;
+						border-radius: 50%;
+						background: $theme-color;
+						color: $white-color;
+					    display: inline-block;
+					    top: -10px;
+					    right: -15px;
+					    font-size: 12px;
+					    @extend %position;
+					}
+				}
+				&:last-child {
+					margin-right: 10px;
+					margin-left: 10px;
+					&::after {
+						display: none;
+					}
+				}
+				&::after {
+					@extend %position;
+					width: 1px;
+					height: 26px;
+					right: -20px;
+					top: 0px;
+					background: $border-color;
+				}
+				i {
+					font-size: 20px;
+					color: $desc-color;
+				}
+			}
+			&.open {
+				li {
+					&.search {
+						.search-input {
+						    transform: scaleY(1);
+						}
+					}
+				}
+			}
+		}
+	}
+	&.style-2 {
+		.primary-menu {
+			top: 0;
+			box-shadow: none;
+			&.menu-fixed {
+				.menu-area {
+					.logo {
+						img {
+							&:first-child {
+								display: none;
+							}
+							&:last-child {
+								display: block;
+							}
+						}
+					}
+					.main-menu-area {
+						.main-menu {
+							li {
+								a {
+									color: $title-color;
+									&.dd-icon-down::after {
+										color: $title-color;
+									}
+									&.active {
+										color: $theme-color;
+										&.dd-icon-down::after {
+											color: $theme-color;
+										}
+									}
+									&:hover {
+										color: $theme-color;
+										&.dd-icon-down::after {
+											color: $theme-color;
+										}
+									}
+								}
+								ul {
+									li {
+										a {
+											&.active {
+												color: $theme-color;
+											}
+										}
+									}
+								}
+							}
+						}
+						.contact-header {
+							span {
+								color: $title-color;
+							}
+						}
+					}
+				}
+			}
+			.menu-area {
+				.logo {
+					width: 160px;
+					img {
+						&:last-child {
+							display: none;
+						}
+					}
+				}
+				.main-menu-area {
+					width: calc(100% - 160px);
+					.main-menu {
+						width: calc(100% - 320px);
+						li {
+							a {
+								color: $white-color;
+								&.active {
+									color: $white-color;
+									&.dd-icon-down::after {
+										color: $white-color;
+									}
+								}
+								&:hover {
+									color: $white-color;
+									&.dd-icon-down::after {
+										color: $white-color;
+									}
+								}
+							}
+							ul {
+								li {
+									a {
+										color: $title-color;
+										&.active, &:hover {
+											color: $theme-color;
+										}
+									}
+								}
+							}
+						}
+					}
+					.contact-header {
+						width: 320px;
+						@extend %flex;
+						align-items: center;
+						span {
+							font-size: 18px;
+							font-weight: 500;
+							color: $white-color;
+						}
+						a {
+							font-size: 16px;
+							font-weight: 500;
+							padding: 15px 25px;
+							border-radius: 50px;
+							background: $primary-color;
+							color: $white-color;
+							margin-left: 15px;
+							box-shadow: 0px 5px 15px 0px rgba(73, 188, 247, 0.5);
+							&:hover {
+								background: $theme-color;
+								box-shadow: 0px 5px 15px 0px rgba(255, 137, 110, 0.5);
+							}
+						}
+					}
+				}
+			}
+			&.header-bg { background-color: $theme-color; animation-name: fadeIn; animation-duration: 2s; }
+		}
+	}
+	&.style-3 {
+		.primary-menu {
+			.menu-area {
+				.logo {
+					img {
+						&:first-child {
+							display: block;
+						}
+						&:last-child {
+							display: block;
+						}
+					}
+				}
+				.main-menu-area {
+					.main-menu {
+						li {
+							a {
+								color: $title-color;
+								&.active {
+									color: $theme-color;
+									&.dd-icon-down::after {
+										color: $theme-color;
+									}
+								}
+								&:hover {
+									color: $theme-color;
+									&.dd-icon-down::after {
+										color: $theme-color;
+									}
+								}
+							}
+						}
+					}
+					.contact-header {
+						span {
+							color: $title-color;
+						}
+						a {
+							background-color: $primary-color;
+						}
+					}
+				}
+			}
+			&.header-bg {
+				background-color: $ash-color;
+			}
+		}
+	}
+	&.transparent-header {
+		@extend %position;
+		width: 100%;
+		z-index: 9;
+	}
+}
+.primary-menu {
+	z-index: 999;
+	// top: 50px;
+	position: relative;
+    width: 100%;
+    text-align: center;
+    display: block;
+    background: transparent;
+    box-shadow: 0px 1px 3px rgba(0,0,0,0.1);
+    @include transition($transition);
+	.menu-area {
+		.logo {
+			padding: 17px 0;
+			outline: none;
+			width: 250px;
+			text-align: left;
+		}
+		.main-menu-area {
+			width: calc(100% - 250px);
+			justify-content: flex-end;
+		}
+		.main-menu {
+			list-style: none;
+			margin: 0;
+			justify-content: center;
+			@include breakpoint(xl) {
+				width: calc(100% - 260px);
+			}
+			li {
+				padding: 0;
+				position: relative;
+				&:last-child {
+					a {
+						margin-right: 0;
+					}
+				}
+				a {
+					color: $title-color;
+					padding: 38px 8px;
+					display: inline-block;
+					margin: 0 6px;
+					font-weight: 400;
+					position: relative;
+					text-transform: capitalize;
+					outline: none;
+					&.active, &:hover {
+						color: $theme-color;
+					}
+					&.dd-icon-down {
+						margin-right: 27px;
+					}
+				}
+				&.active>a {
+					color: $theme-color;
+				}
+				&:hover>a {
+					text-decoration: none;
+				}
+				ul {
+					margin: 0;
+					opacity: 0;
+		    		visibility: hidden;
+					position: absolute;
+					background-color: $white-color;
+					width: 270px;
+					padding: 15px 30px;
+					border-radius: 6px;
+    				@include transition($transition);
+					li {
+						position: relative;
+						list-style: none;
+						float: none;
+					    border-bottom: 1px solid $border-color;
+						&:last-child{
+					    	border-bottom: none;
+					    }
+						a {
+							padding: 11px 0;
+							color: $desc-color;
+						    margin: 0;
+						    display: block;
+						    text-align: left;
+						    padding-left: 0px;
+							font-family: $roboto;
+							font-size: 98%;
+							@include transition($transition);
+						    &:hover{
+						    	background-color: $white-color;
+						    	padding-left: 10px;
+						    }
+						}
+						ul {
+							left: 115%;
+							top: -5px;
+						}
+					}
+				}
+				&:hover>{
+					ul {
+						z-index: 1;
+						opacity: 1;
+		    			visibility: visible;
+					    box-shadow: 0 0 3px 0 rgba(0,0,0,0.1);
+					}
+				}
+			}
+			ul li.active {
+			    a {
+			    	color: $theme-color;
+			    }
+			}
+		}
+	}
+	&.menu-fixed {
+		position: fixed;
+		background: $white-color;
+		top: 0;
+		box-shadow: 0px 0px 2px rgba(0, 0, 0, .1) !important;
+	}
+}
+.search-area {
+	&.open {
+		.search-input {
+			transform: scaleX(1);
+		}
+	}
+	.search-input {
+	    margin: auto;
+	    position: fixed;
+	    top: 0;
+	    right: 0;
+	    bottom: 0;
+	    left: 0;
+	    background: $white-color;
+	    z-index: 1111111;
+	    text-align: center;
+	    -webkit-backface-visibility: hidden;
+	    backface-visibility: hidden;
+	    transform-origin: left;
+	    transform: scaleX(0);
+	    @include transition($transition);
+	    .search-close {
+	    	width: 50px;
+	    	height: 50px;
+    	    top: 50px;
+			right: 50px;
+			cursor: pointer;
+			@extend %position;
+			&:hover {
+				span {
+					background: $theme-color;
+				}
+			}
+		    span {
+		    	width: 50px;
+		    	height: 1px;
+		    	background: $title-color;
+    	        top: 25px;
+    			right: 0px;
+    			@extend %position;
+    			@include transition($transition);
+    			&:nth-child(1) {
+    				transform: rotate(45deg);
+    			}
+    			&:nth-child(2) {
+    				transform: rotate(-45deg);
+    			}
+		    }
+	    }
+	    form {
+		    @extend %position;
+		    top: 50%;
+		    left: 50%;
+		    width: 75%;
+		    transform: translate(-50%,-50%);
+		    input {
+		    	width: 100%;
+		    	color: $desc-color;
+		    	border-radius: 0;
+		    	text-align: center;
+		    	font-size: $fs-h2;
+		    	border: none;
+		    	border-bottom: 1px solid rgba(37, 51, 101, 0.15);;
+		    	&:hover, &:focus {
+		    		border-color: $theme-color;
+		    	}
+		    }
+	    }
+	}
+}
+.cart {
+	position: relative;
+	&:hover {
+		.cart-content {
+		    opacity: 1;
+		    visibility: visible;
+		    transform: translate(0);
+		    -webkit-transform: translate(0);
+		    -ms-transform: translate(0);
+		}
+	}
+	.cart-content {
+	    position: absolute;
+	    top: 100%;
+	    right: 0;
+	    opacity: 0;
+	    visibility: hidden;
+	    min-width: 270px;
+	    box-shadow: 0px 4px 8px rgba(212,212,212,.58);
+	    -webkit-transition: .4s ease-in-out;
+	    transition: .4s ease-in-out;
+	    transform: translateX(-10px);
+	    -webkit-transform: translateX(-10px);
+	    -ms-transform: translateX(-10px);
+	    z-index: 9;
+	    background-color: $white-color;
+	    padding: 15px;
+	    margin-top: 32px;
+		cursor: auto;
+		@include border-radius(8px);
+		.cart-item {
+		    border-top: 1px solid $border-color;
+		    overflow: hidden;
+			padding: 15px 0;
+			@extend %flex;
+			position: relative;
+			&:first-child {
+				padding-top: 0;
+				border-top: none;
+			}
+			.cart-img {
+				width: 75px;
+			    a {
+					display: block;
+			    	img {
+						width: 60px;
+						height: 60px;
+						line-height: 60px;
+						margin-right: 14px;
+						border-radius: 8px;
+			    	}
+			    }
+			}
+			.cart-des {
+				width: calc(100% - 95px);
+				padding-right: 10px;
+				text-align: left;
+			    a {
+				    color: $title-color;
+				    font-size: 14px;
+				    text-decoration: none;
+				    font-weight: 600;
+					@include transition($transition);
+					&:hover {color: $theme-color;}
+				}
+				p {
+				    font-size: 16px;
+				    text-align: left;
+				}
+			}
+			.cart-btn {
+				width: 20px;
+				position: relative;
+			    a {
+					@extend %position;
+				    width: 20px;
+					height: 20px;
+					top: 0;
+					left: 0;
+				    text-align: center;
+				    line-height: 17px;
+					border-radius: 50px;
+					background-color: $ash-color;
+					@include transition($transition);
+					i {
+						font-size: 11px;
+						color: $desc-color;
+					}
+				}
+			}
+		}
+		.cart-bottom {
+			margin: 0 -15px;
+			padding: 10px 15px 0;
+			border-top: 1px solid $border-color;
+		    .cart-subtotal {
+				@extend %flex;
+				justify-content: space-between;
+				p {
+				    font-weight: 600;
+				    color: $title-color;
+					margin-bottom: 10px;
+					display: inline-block;
+				}
+				.p_price {
+					font-weight: 400;
+				}
+			}
+			.cart-action {
+				@extend %flex;
+				justify-content: space-between;
+				.button {
+					padding: 10px 28px;
+					border-radius: 50px;
+					background: $primary-color;
+					color: $white-color;
+					cursor: pointer;
+					border: none;
+					line-height: 18px;
+					font-size: 11px;
+					text-transform: uppercase;
+					font-weight: 500;
+					position: relative;
+					@include transition($transition);
+					&:hover {
+						background: $theme-color;
+						box-shadow: 0px 5px 15px 0px rgba(255, 137, 110, 0.5);
+					}
+					&:last-child {
+						background: $theme-color;
+						&:hover {
+							background-color: $primary-color;
+							box-shadow: 0px 5px 15px 0px rgba(73, 188, 247, 0.5);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+// page header start here
+.page-header {
+	background-color: #f9fafb;
+	padding-bottom: 0 !important;
+	margin-top: 60px;
+	@include breakpoint(xl) {
+		margin-top: 0;
+	}
+	.page-header-item {
+		padding: 30px 0;
+		@include breakpoint(sm) {
+			padding: 80px 0;
+		}
+		h2 {
+			font-size: 28px;
+			line-height: 32px;
+			margin: 0;
+			@include breakpoint(sm) {
+				font-size: 60px;
+				line-height: 60px;
+			}
+		}
+		.post-content {
+			// @include transform(translateY(25px));
+			text-align: center;
+			h5 {
+				color: $primary-color;
+			}
+			&.style-two {
+				h2 {
+					margin-bottom: 15px;
+					@include breakpoint(sm) {
+						margin-bottom: 30px;
+					}
+				}
+				p {
+					margin: 0 auto;
+					max-width: 600px;
+				}
+			}
+		}
+	}
+	&.service-page-header {
+		.page-header-item {
+			@include breakpoint(max-lg) {
+				padding: 60px 0;
+			}
+		}
+	}
+}
+
+// breadcamp start here
+.breadcamp {
+	border-bottom: 1px solid #ebebeb;
+	ul {
+		min-height: 40px;
+		@include breakpoint(sm) {
+			min-height: 60px;
+		}
+		li {
+			padding: 4px;
+			a {
+				padding: 8px;
+				color: $title-color;
+				position: relative;
+				outline: none;
+				font-size: $fs-base;
+				@include breakpoint(max-sm) {
+					font-size: 98%;
+				}
+				&:hover {color: $theme-color;}
+				&::after {
+					position: absolute;
+					content: '\f105';
+					font-family: "Font Awesome 5 Free";
+					top: 50%;
+					right: -10px;
+					font-weight: 600;
+					color: #bbbbbb;
+					@include transform(translateY(-50%));
+				}
+				&.active {
+					color: #515c84;
+					&::after {
+						display: none;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+.pro-filter{
+	position: relative;
+	margin-bottom: 53px;
+}
+
+.pro-fli-btn {
+	@extend %flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 25px;
+}
+.pro-fli-btn input {
+	background: $theme-color !important;
+	padding: 10px 25px !important;
+	border-radius: 50px !important;
+	color: $white-color !important;
+	font-weight: 400 !important;
+	font-size: 14px !important;
+}
+.pro-fli-btn p {
+	margin-bottom: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: $title-color;
+}

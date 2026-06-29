@@ -1,0 +1,286 @@
+.footer {
+	padding-bottom: 0;
+    @include breakpoint(xl) {
+		background: url(../../assets/images/footer/footer-bg.png) no-repeat;
+	    background-position: right top;
+	    background-size: cover;
+    }
+	@include breakpoint(max-md) {
+		padding-top: 0;
+	}
+	.section-wrapper {
+		.footer-top {
+			@extend %flex;
+			.footer-rounding {
+				width: 100%;
+				justify-content: center;
+				@extend %flex;
+				@include breakpoint(xl) {
+					width: 40%;
+				}
+				.footer-logo {
+					width: 280px;
+					height: 280px;
+					border-radius: 100%;
+					box-shadow: 0px 0px 24px 0px rgba(27, 16, 66, 0.05);
+					text-align: center;
+					position: relative;
+					&::before, &::after {
+						@extend %position;
+						top: 50%;
+						left: 50%;
+						border-radius: 100%;
+						transform: translate(-50%, -50%);
+					}
+					&::before {
+						width: 340px;
+						height: 340px;
+						box-shadow: 0px 0px 24px 0px rgba(27, 16, 66, 0.03);
+						@include breakpoint(max-sm) {
+							display: none;
+						}
+					}
+					&::after {
+						@extend %position;
+						width: 413px;
+						height: 413px;
+						box-shadow: 0px 0px 24px 0px rgba(27, 16, 66, 0.02);
+						@include breakpoint(max-sm) {
+							display: none;
+						}
+					}
+					.footer-circle-wrapper {
+				        width: 74%;
+						height: 79%;
+						left: 13%;
+						top: 10%;
+				        perspective: 1000px;
+				        position: absolute;
+					    &:nth-child(1) {
+				    	    animation: lactor_1 5s infinite linear;
+					    }
+					    &:nth-child(2) {
+				    	    animation: lactor_2 5s infinite linear;
+					    }
+						.footer-circle {
+							display: block;
+						    box-shadow: 0px 0px 20px 0px rgba(0,0,0,.3);
+		    				background: $ash-color;
+		    				width: 15px;
+		    				height: 15px;
+		    				border-radius: 100%;
+						}
+					}
+					.logo-contact {
+						@extend %position;
+						width: 100%;
+						left: 50%;
+						top: 50%;
+					    z-index: 1;
+						transform: translate(-50%, -50%);
+						a {
+							display: inline-block;
+							img {
+								margin-bottom: 15px;
+							}
+						}
+						ul {
+							li {
+								padding: 5px 0;
+								font-size: 22px;
+								color: $primary-color;
+								&:last-child {
+									padding: 0;
+								}
+								a {
+									font-size: 16px;
+									color: $desc-color;
+								}
+							}
+						}
+					}
+				}
+			}
+			.footer-content {
+				@extend %flex;
+				width: 100%;
+				@include breakpoint(xl) {
+					width: 60%;
+					justify-content: space-around;
+				}
+				.footer-item {
+					@include breakpoint(max-xl) {
+						width: calc(100% / 3);
+					}
+					@include breakpoint(max-sm) {
+						width: calc(100% / 1);
+					}
+				}
+				.footer-about, .footer-service, .footer-contact {
+					@include breakpoint(max-sm) {
+						margin-top: 40px;
+					}
+					h5 {
+						margin-bottom: 30px;
+						margin-top: -7px;
+					}
+					ul {
+						li {
+							padding: 8px 0;
+							a {
+								@include transition($transition);
+								display: inline-block;
+								color: $desc-color;
+								&:hover {
+									color: $theme-color;
+								}
+							}
+						}
+					}
+				}
+				.footer-about {}
+				.footer-service {}
+				.footer-contact {
+					span {
+						font-size: 18px;
+						font-weight: 500;
+						color: $title-color;
+						display: inline-block;
+						margin-bottom: 15px;
+					}
+					p {
+						max-width: 270px;
+					}
+					a {
+						color: $primary-color;
+						text-decoration: underline;
+						&:hover {
+							color: $theme-color;
+						}
+					}
+					.social-link-list {
+						margin-top: 30px !important;
+						li {
+							a {
+								background: transparent;
+								border: 1px solid $border-color;
+								&:hover {
+									i {
+										color: $white-color !important;
+									}
+								}
+								i {
+									color: #606a8f !important;
+								}
+								&.facebook {
+									&:hover {
+										background: $facebook;
+									}
+								}
+								&.twitter-sm {
+									&:hover {
+										background: $twitter;
+									}
+								}
+								&.linkedin {
+									&:hover {
+										background: $linkedin;
+									}
+								}
+								&.google {
+									&:hover {
+										background: $google;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		.footer-bottom {
+			@extend %flex;
+			flex-direction: row-reverse;
+			padding: 40px 0;
+			text-align: left;
+			@include breakpoint(sm) {
+				padding: 80px 0 40px;
+			}
+			@include breakpoint(lg) {
+				justify-content: space-between;
+				padding: 125px 0 40px;
+			}
+			.fb-left {
+				@include breakpoint(max-lg) {
+					width: 100%;
+				}
+				p {
+					@include breakpoint(max-lg) {
+						margin-top: 15px;
+						margin-bottom: 0;
+						text-align: center;
+					}
+					@include breakpoint(max-sm) {
+						text-align: left;
+					}
+					a {
+						color: $title-color;
+						font-weight: 500;
+						@include transition($transition);
+						&:hover {
+							color: $theme-color;
+							text-decoration: underline;
+						}
+					}
+				}
+			}
+			.fb-right {
+				@include breakpoint(max-lg) {
+					width: 100%;
+				}
+				ul {
+					@extend %flex;
+					justify-content: center;
+					@include breakpoint(lg) {
+						justify-content: flex-start;
+					}
+					li {
+						@include breakpoint(max-sm) {
+							width: 100%;
+						}
+						a {
+							padding: 0 20px;
+							display: inline-block;
+							position: relative;
+							@include breakpoint(max-sm) {
+								padding: 5px;
+								padding-left: 0;
+
+							}
+							&::after {
+								@extend %position;
+								top: 50%;
+								right: 0;
+								width: 5px;
+								height: 5px;
+								border-radius: 100%;
+								background: $border-color;
+								transform: translateY(-50%);
+								@include breakpoint(max-sm) {
+									display: none;
+								}
+							}
+						}
+						&:last-child {
+							a {
+								&::after {
+									display: none;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
