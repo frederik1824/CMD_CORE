@@ -152,7 +152,7 @@ class CargaDemoCompletaSeeder extends Seeder
         $apellidos = ['Gómez', 'Rodríguez', 'Sánchez', 'Pérez', 'Martínez', 'García', 'López', 'Díaz', 'Fernández', 'Vargas', 'Jiménez', 'Cruz', 'Reyes', 'Hernández', 'Morales', 'Castillo', 'Ramírez', 'Flores', 'Guzmán', 'Ortiz'];
         $provincias = ['Santo Domingo', 'Santiago', 'La Vega', 'San Cristóbal', 'Duarte', 'San Pedro de Macorís', 'La Romana', 'Puerto Plata', 'Espaillat', 'Barahona'];
 
-        $tipoIdCed = Catalogo::where('grupo', 'tipo_identificacion')->where('codigo', 'CEDULA')->first()?->id ?? 1;
+        $tipoIdCed = Catalogo::where('grupo', 'tipo_identificacion')->where('codigo', 'CED')->first()?->id ?? 1;
 
         // Crear 300 Afiliados Titulares
         for ($i = 1; $i <= 300; $i++) {
