@@ -179,6 +179,14 @@ class PdssDemoCatalogSeeder extends Seeder
             $groupId = $groups[$s['group']]->id;
             $subgroupId = $subgroups[$s['subgroup']]->id;
 
+            // Construir estructura JSON simulada para raw_text (coberturas y porcentajes)
+            $rawJson = json_encode([
+                'cuota_ars_pct' => 80.00,
+                'cuota_afil_pct' => 20.00,
+                'cobertura_tope' => $s['is_high_cost'] ? 1000000.00 : 50000.00,
+                'cuota_afil_tope' => 10000.00
+            ]);
+
             PdssService::updateOrCreate(
                 ['pdss_plan_id' => $plan->id, 'simon_code' => $s['simon_code']],
                 [
@@ -201,7 +209,7 @@ class PdssDemoCatalogSeeder extends Seeder
                     'is_diagnostic_support' => $s['diagnostic'],
                     'is_medicine' => $s['medicine'],
                     'is_active' => true,
-                    'raw_text' => $s['coverage_description']
+                    'raw_text' => $rawJson
                 ]
             );
         }
