@@ -11,12 +11,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Rubik:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     
-    <!-- Lector Native Stylesheets -->
-    <link rel="stylesheet" href="{{ asset('themes/lector/assets/css/bootstrap-grid.css') }}">
+    <!-- Lector Native Stylesheets (Only icons/animation to prevent layout distortion) -->
     <link rel="stylesheet" href="{{ asset('themes/lector/assets/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('themes/lector/assets/css/animate.css') }}">
     <link rel="stylesheet" href="{{ asset('themes/lector/assets/flaticon/flaticon.css') }}">
-    <link rel="stylesheet" href="{{ asset('themes/lector/assets/css/style.css') }}">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -90,6 +88,32 @@
             color: #fff !important;
             box-shadow: 0 5px 15px rgba(73, 188, 247, 0.4);
             padding-left: 24px;
+        }
+        
+        /* Force Sidebar width to prevent collasping */
+        aside.w-64 {
+            width: 16rem !important;
+            min-width: 16rem !important;
+            max-width: 16rem !important;
+        }
+
+        /* Force Tables to render natively and respect Tailwind alignments */
+        table.min-w-full {
+            display: table !important;
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+        table.min-w-full thead {
+            display: table-header-group !important;
+        }
+        table.min-w-full tbody {
+            display: table-row-group !important;
+        }
+        table.min-w-full tr {
+            display: table-row !important;
+        }
+        table.min-w-full th, table.min-w-full td {
+            display: table-cell !important;
         }
     </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>

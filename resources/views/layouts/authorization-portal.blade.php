@@ -10,12 +10,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Rubik:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- Lector Native Stylesheets -->
-    <link rel="stylesheet" href="{{ asset('themes/lector/assets/css/bootstrap-grid.css') }}">
+    <!-- Lector Native Stylesheets (Only icons/animation to prevent layout distortion) -->
     <link rel="stylesheet" href="{{ asset('themes/lector/assets/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('themes/lector/assets/css/animate.css') }}">
     <link rel="stylesheet" href="{{ asset('themes/lector/assets/flaticon/flaticon.css') }}">
-    <link rel="stylesheet" href="{{ asset('themes/lector/assets/css/style.css') }}">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -65,6 +63,25 @@
             box-shadow: 0 15px 30px rgba(64, 54, 99, 0.08);
             border-color: rgba(73, 188, 247, 0.3);
         }
+        
+        /* Force Tables to render natively and respect Tailwind alignments */
+        table.min-w-full {
+            display: table !important;
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+        table.min-w-full thead {
+            display: table-header-group !important;
+        }
+        table.min-w-full tbody {
+            display: table-row-group !important;
+        }
+        table.min-w-full tr {
+            display: table-row !important;
+        }
+        table.min-w-full th, table.min-w-full td {
+            display: table-cell !important;
+        }
     </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -111,12 +128,12 @@
             
             @if($accessType === 'pharmacy')
                 <a href="{{ route('pss.buscar') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.buscar') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Validar Afiliado</a>
-                <a href="{{ route('pss.farmacia.nueva_dispensacion') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.farmacia.nueva_dispensacion') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Nueva Dispensación</a>
+                <a href="{{ route('pss.farmacia.nueva_dispensacion') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.farmacia.nueva_dispensacion') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Nueva Autorización</a>
                 <a href="{{ route('pss.farmacia.recetas') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.farmacia.recetas') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Recetas</a>
             @elseif($accessType === 'laboratory')
                 <a href="{{ route('pss.buscar') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.buscar') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Validar Afiliado</a>
-                <a href="{{ route('pss.laboratorio.nueva_orden') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.laboratorio.nueva_orden') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Nueva Orden</a>
-                <a href="{{ route('pss.laboratorio.ordenes') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.laboratorio.ordenes') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Órdenes</a>
+                <a href="{{ route('pss.laboratorio.nueva_orden') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.laboratorio.nueva_orden') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Nueva Autorización</a>
+                <a href="{{ route('pss.laboratorio.ordenes') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.laboratorio.ordenes') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Autorizaciones</a>
                 <a href="{{ route('pss.laboratorio.resultados') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.laboratorio.resultados') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Resultados</a>
             @else
                 <a href="{{ route('pss.buscar') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.buscar') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Buscar Afiliado</a>
@@ -181,12 +198,12 @@
         
         @if($accessType === 'pharmacy')
             <a href="{{ route('pss.buscar') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Validar Afiliado</a>
-            <a href="{{ route('pss.farmacia.nueva_dispensacion') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Nueva Dispensación</a>
+            <a href="{{ route('pss.farmacia.nueva_dispensacion') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Nueva Autorización</a>
             <a href="{{ route('pss.farmacia.recetas') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Recetas</a>
         @elseif($accessType === 'laboratory')
             <a href="{{ route('pss.buscar') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Validar Afiliado</a>
-            <a href="{{ route('pss.laboratorio.nueva_orden') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Nueva Orden</a>
-            <a href="{{ route('pss.laboratorio.ordenes') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Órdenes</a>
+            <a href="{{ route('pss.laboratorio.nueva_orden') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Nueva Autorización</a>
+            <a href="{{ route('pss.laboratorio.ordenes') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Autorizaciones</a>
             <a href="{{ route('pss.laboratorio.resultados') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Resultados</a>
         @else
             <a href="{{ route('pss.buscar') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Buscar Afiliado</a>
