@@ -347,7 +347,7 @@ function dependentWizard() {
             }
             this.searching = true;
             try {
-                const res = await fetch(`{{ route('ars.solicitudes.dependientes.buscar_titular') }}?q=${encodeURIComponent(this.searchQuery)}`);
+                const res = await fetch(`/core/afiliaciones/dependientes/buscar-titular?q=${encodeURIComponent(this.searchQuery)}`);
                 this.searchResults = await res.json();
                 this.showResults = true;
             } catch (e) {

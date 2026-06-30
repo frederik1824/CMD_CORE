@@ -352,7 +352,7 @@
 {{-- ========================= JAVASCRIPT AJAX ========================= --}}
 @push('scripts')
 <script>
-const CONSULTAR_URL = "{{ route('ars.unipago.consultar_cedula') }}";
+const CONSULTAR_URL = "/core/unipago/consultar-cedula";
 const CSRF_TOKEN = "{{ csrf_token() }}";
 
 // Cargar cédulas demo desde afiliados reales

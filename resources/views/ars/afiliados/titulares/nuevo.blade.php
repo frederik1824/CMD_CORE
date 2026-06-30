@@ -602,7 +602,7 @@ function formWizard() {
             this.prevalidating = true;
             this.prevalResult = null;
             try {
-                const res = await fetch("{{ route('ars.unipago_simulador.ejecutar_ws') }}", {
+                const res = await fetch("/core/unipago-simulador/ejecutar-ws", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -149,7 +149,7 @@
                 let startTime = performance.now();
 
                 try {
-                    let response = await fetch("{{ route('ars.unipago_simulador.ejecutar_ws') }}", {
+                    let response = await fetch("/core/unipago-simulador/ejecutar-ws", {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
