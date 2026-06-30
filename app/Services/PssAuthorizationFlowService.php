@@ -348,6 +348,26 @@ class PssAuthorizationFlowService
             'mensajes' => $mensajes,
         ];
     }
+
+    /**
+     * Construye una respuesta estandarizada de rechazo
+     */
+    private static function makeResponse(string $result, string $message): array
+    {
+        return [
+            'result' => $result,
+            'monto_solicitado' => 0.00,
+            'monto_contratado' => 0.00,
+            'monto_autorizado' => 0.00,
+            'copago' => 0.00,
+            'monto_no_cubierto' => 0.00,
+            'requiere_autorizacion' => false,
+            'requiere_auditoria' => false,
+            'requiere_documento' => false,
+            'estado_sugerido' => 'Rechazada',
+            'mensajes' => [$message],
+        ];
+    }
 }
 
 // Helper to safely parse decimal values
