@@ -37,8 +37,8 @@ class ClaimDemoSeeder extends Seeder
             }
         }
 
-        $afiliados = Afiliado::all();
-        if ($afiliados->isEmpty()) {
+        $afiliadoIds = Afiliado::pluck('id');
+        if ($afiliadoIds->isEmpty()) {
             return;
         }
 
@@ -50,7 +50,7 @@ class ClaimDemoSeeder extends Seeder
         if ($autorizaciones->count() < 120) {
             // Generar autorizaciones aprobadas adicionales para poder reclamar
             for ($i = 0; $i < 150; $i++) {
-                $afiliado = $afiliados->random();
+                $afiliadoId = $afiliadoIds->random();
                 $pss = $pssList->random();
                 $monto = rand(500, 15000);
                 
@@ -60,7 +60,7 @@ class ClaimDemoSeeder extends Seeder
                 $autorizaciones->push(Autorizacion::create([
                     'numero_autorizacion' => $numAut,
                     'afiliado_type' => 'titular',
-                    'afiliado_id' => $afiliado->id,
+                    'afiliado_id' => $afiliadoId,
                     'pss_id' => $pss->id,
                     'medico_solicitante' => 'Dr. Prescriptor Ficticio ' . rand(1, 100),
                     'diagnostico' => 'I10 - HTA Esencial',
