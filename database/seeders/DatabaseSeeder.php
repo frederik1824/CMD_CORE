@@ -37,12 +37,16 @@ class DatabaseSeeder extends Seeder
         $this->command->info('Seeding Users and Roles...');
         $this->seedUsers();
 
-        $this->command->info('Importing PDSS 10.0 Catalog from Excel...');
-        Artisan::call('pdss:import-excel');
-        $this->command->info(Artisan::output());
-
         $this->command->info('Seeding PSS and Services...');
         $this->seedPssAndServices();
+
+        try {
+            $this->command->info('Importing PDSS 10.0 Catalog from Excel...');
+            Artisan::call('pdss:import-excel');
+            $this->command->info(Artisan::output());
+        } catch (\Throwable $e) {
+            $this->command->warn('Warning: PDSS Excel import skipped or failed: ' . $e->getMessage());
+        }
 
         $this->command->info('Seeding PDSS Contracts...');
         $this->call(PdssSeeder::class);

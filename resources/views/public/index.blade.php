@@ -208,7 +208,7 @@
                         <div class="floating-bubble bubble-blue">Bienestar</div>
 
                         <!-- Doctor Image -->
-                        <img src="{{ asset('assets/images/hero_doctor.png') }}" alt="Médico ARS CMD" class="doctor-image">
+                        <img src="{{ asset('assets/images/hero_doctor.png') }}" alt="Médico ARS CMD" class="doctor-image max-h-[520px] w-auto inline-block object-contain" style="max-height: 520px !important; width: auto !important; max-width: 100%;">
                     </div>
                 </div>
             </div>
@@ -258,7 +258,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <div class="post-thumb pr-lg-4 position-relative">
-                        <img src="{{ asset('assets/images/about_consulting.png') }}" alt="Sobre ARS CMD" class="img-fluid rounded-3xl shadow-md">
+                        <img src="{{ asset('assets/images/about_consulting.png') }}" alt="Sobre ARS CMD" class="img-fluid rounded-3xl shadow-md max-w-full h-auto" style="max-width: 100% !important; height: auto !important;">
                         <div class="about-video" style="position: absolute; bottom: 30px; right: 30px; z-index: 5;">
                             <a href="https://www.youtube.com/embed/tnxBWV3DN4k" data-rel="lightcase" title="Video Institucional" class="av-icon flex items-center justify-center pulse3" style="background: #49bcf7; width: 60px; height: 60px; border-radius: 50%; color: white;">
                                 <i class="fas fa-play"></i>
