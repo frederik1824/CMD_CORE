@@ -171,7 +171,10 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($catalogs as $cat) {
-            Catalogo::create($cat);
+            Catalogo::updateOrCreate(
+                ['codigo' => $cat['codigo']],
+                $cat
+            );
         }
     }
 
@@ -188,24 +191,28 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($roles as $role => $email) {
-            User::create([
-                'name' => $role,
-                'email' => $email,
-                'password' => Hash::make('password'),
-                'role' => $role,
-                'pss_id' => ($role === 'Usuario PSS') ? 1 : null // Asociado a Clínica Abreu
-            ]);
+            User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $role,
+                    'password' => Hash::make('password'),
+                    'role' => $role,
+                    'pss_id' => ($role === 'Usuario PSS') ? 1 : null
+                ]
+            );
         }
 
         // 3 Estudiantes Demo
         for ($s = 1; $s <= 3; $s++) {
-            User::create([
-                'name' => "Estudiante Demo $s",
-                'email' => "estudiante$s@ars.com",
-                'password' => Hash::make('password'),
-                'role' => 'Estudiante',
-                'pss_id' => null
-            ]);
+            User::updateOrCreate(
+                ['email' => "estudiante$s@ars.com"],
+                [
+                    'name' => "Estudiante Demo $s",
+                    'password' => Hash::make('password'),
+                    'role' => 'Estudiante',
+                    'pss_id' => null
+                ]
+            );
         }
     }
 
