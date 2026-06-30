@@ -183,7 +183,7 @@ class PdssDemoCatalogSeeder extends Seeder
             $rawJson = json_encode([
                 'cuota_ars_pct' => 80.00,
                 'cuota_afil_pct' => 20.00,
-                'cobertura_tope' => $s['is_high_cost'] ? 1000000.00 : 50000.00,
+                'cobertura_tope' => ($s['high_cost'] ?? false) ? 1000000.00 : 50000.00,
                 'cuota_afil_tope' => 10000.00
             ]);
 
@@ -202,7 +202,7 @@ class PdssDemoCatalogSeeder extends Seeder
                     'copay_type' => '20%',
                     'requires_authorization' => $s['requires_auth'],
                     'requires_medical_audit' => $s['requires_audit'],
-                    'is_high_cost' => $s['is_high_cost'] ?? false,
+                    'is_high_cost' => $s['high_cost'] ?? false,
                     'is_emergency' => false,
                     'is_hospitalization' => false,
                     'is_surgery' => $s['coverage_type'] === 'Cirugía',
