@@ -72,7 +72,7 @@ class UnipagoDemoSeeder extends Seeder
             }
         }
 
-        $titulares = Afiliado::all();
+        $titulares = Afiliado::select('id', 'primer_apellido')->inRandomOrder()->limit(500)->get();
         $dependientesCount = Dependiente::count();
         if ($dependientesCount < 300) {
             $needed = 300 - $dependientesCount;
