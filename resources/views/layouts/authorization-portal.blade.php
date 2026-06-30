@@ -183,6 +183,41 @@
         <a href="{{ route('pss.reclamaciones.index') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Reclamaciones</a>
         <a href="{{ route('pss.pagos.index') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Pagos</a>
         <a href="{{ route('pss.perfil') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold hover:bg-slate-100 hover:text-[#49bcf7]">Tarifario PSS</a>
+
+        <!-- Sección de Perfil Móvil y Logout -->
+        <div class="border-t border-[#ecf0f3] pt-4 mt-2">
+            <div class="px-3 py-2">
+                @if(Auth::check())
+                    <span class="block text-xs font-bold text-slate-800">{{ Auth::user()->name }}</span>
+                    @if(count($pssProfiles) > 1)
+                        <form action="{{ route('pss.perfil.switch') }}" method="POST" class="mt-2" id="switch-profile-form-mobile">
+                            @csrf
+                            <label class="block text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1">Cambiar de Prestador:</label>
+                            <select name="access_type" onchange="document.getElementById('switch-profile-form-mobile').submit()" 
+                                    class="text-xs text-[#49bcf7] bg-blue-50 border border-blue-100 rounded-xl py-1 px-3 w-full font-bold focus:ring-0 cursor-pointer">
+                                @foreach($pssProfiles as $prof)
+                                    <option value="{{ $prof->access_type }}" {{ $accessType === $prof->access_type ? 'selected' : '' }}>
+                                        {{ $prof->access_type === 'pharmacy' ? 'Farmacia' : ($prof->access_type === 'laboratory' ? 'Laboratorio' : 'Centro Médico') }} ({{ $prof->pss->nombre }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+                    @else
+                        <span class="block text-[10px] text-[#49bcf7] font-bold uppercase tracking-wider mt-0.5">
+                            {{ $accessType === 'pharmacy' ? 'Farmacia' : ($accessType === 'laboratory' ? 'Laboratorio' : 'Centro Médico') }} ({{ $activePssObj->nombre ?? 'Clínica Abreu' }})
+                        </span>
+                    @endif
+                    
+                    <form action="{{ route('logout') }}" method="POST" class="mt-4">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center justify-center space-x-2 bg-rose-50 border border-rose-100 text-[#f53b57] hover:bg-rose-100 py-2.5 rounded-xl text-xs font-bold transition">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Cerrar Sesión</span>
+                        </button>
+                    </form>
+                @endif
+            </div>
+        </div>
     </div>
     <!-- Content Canvas -->
     <div class="flex-grow max-w-7xl w-full mx-auto p-6 md:p-8 flex flex-col">
