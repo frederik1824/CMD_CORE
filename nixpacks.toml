@@ -2,9 +2,3 @@
 cmds = [
     "mkdir -p /var/log/nginx /var/cache/nginx && chmod -R 777 /var/log/nginx /var/cache/nginx"
 ]
-
-[phases.install]
-cmds = [
-    "composer install --ignore-platform-reqs",
-    "npm install --legacy-peer-deps"
-]
