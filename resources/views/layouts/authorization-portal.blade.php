@@ -91,9 +91,17 @@
             $accessType = session('active_access_type', 'medical_center');
             $pssId = session('active_pss_id', 1);
             $activePssObj = \App\Models\Pss::find($pssId);
-            $pssProfiles = [];
+            $pssProfiles = collect();
             if (Auth::check()) {
                 $pssProfiles = \App\Models\PssUser::where('user_id', Auth::id())->where('status', 'activo')->get();
+                // Fallback de demostración si la base de datos está vacía o el seed no se completó
+                if ($pssProfiles->isEmpty() && Auth::user()->role === 'Usuario PSS') {
+                    $pssProfiles = collect([
+                        (object)['access_type' => 'medical_center', 'pss_id' => 1, 'pss' => (object)['nombre' => 'Clínica Central Demo']],
+                        (object)['access_type' => 'pharmacy', 'pss_id' => 11, 'pss' => (object)['nombre' => 'Farmacias GBC Demo']],
+                        (object)['access_type' => 'laboratory', 'pss_id' => 12, 'pss' => (object)['nombre' => 'Amadita Laboratorio Demo']]
+                    ]);
+                }
             }
         @endphp
 
@@ -120,7 +128,13 @@
             <a href="{{ route('pss.reclamaciones.index') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.reclamaciones.*') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Reclamaciones</a>
             <a href="{{ route('pss.pagos.index') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.pagos.index') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Pagos</a>
             <a href="{{ route('pss.perfil') }}" class="px-4 py-2.5 rounded-full transition {{ Route::is('pss.perfil') ? 'bg-[#49bcf7] text-white shadow-sm' : 'text-slate-650 hover:bg-slate-100 hover:text-[#49bcf7]' }}">Tarifario PSS</a>
+            
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-nav').submit();" class="px-4 py-2.5 rounded-full text-rose-600 hover:bg-rose-50 transition flex items-center gap-1.5"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión (Salir)</a>
         </nav>
+        
+        <form id="logout-form-nav" action="{{ route('logout') }}" method="POST" class="hidden">
+            @csrf
+        </form>
 
         <!-- User profile & Logout -->
         <div class="flex items-center space-x-4 text-slate-800">
@@ -132,10 +146,10 @@
                         <form action="{{ route('pss.perfil.switch') }}" method="POST" class="mt-0.5" id="switch-profile-form">
                             @csrf
                             <select name="access_type" onchange="document.getElementById('switch-profile-form').submit()" 
-                                    class="text-[9px] text-[#49bcf7] bg-blue-50 border-0 rounded-full py-0 px-2 font-bold focus:ring-0 cursor-pointer">
+                                    class="text-[10px] text-[#49bcf7] bg-blue-50 border border-blue-100 rounded-full py-0.5 px-3 font-bold focus:ring-0 cursor-pointer">
                                 @foreach($pssProfiles as $prof)
                                     <option value="{{ $prof->access_type }}" {{ $accessType === $prof->access_type ? 'selected' : '' }}>
-                                        {{ $prof->access_type === 'pharmacy' ? 'Farmacia' : ($prof->access_type === 'laboratory' ? 'Laboratorio' : 'Centro Médico') }} ({{ $prof->pss->nombre }})
+                                        {{ $prof->access_type === 'pharmacy' ? 'Farmacia' : ($prof->access_type === 'laboratory' ? 'Laboratorio' : 'Centro Médico') }} ({{ $prof->pss->nombre ?? 'Prestadora Demo' }})
                                     </option>
                                 @endforeach
                             </select>
@@ -153,8 +167,9 @@
             
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit" class="text-slate-400 hover:text-[#f53b57] transition p-2 rounded-full hover:bg-slate-100" title="Cerrar sesión">
-                    <i class="fas fa-sign-out-alt text-base"></i>
+                <button type="submit" class="flex items-center space-x-1.5 text-xs text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-full transition font-semibold" title="Cerrar sesión">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
                 </button>
             </form>
         </div>
