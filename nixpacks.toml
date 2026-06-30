@@ -2,3 +2,6 @@
 cmds = [
     "mkdir -p /var/log/nginx /var/cache/nginx && chmod -R 777 /var/log/nginx /var/cache/nginx"
 ]
+
+[variables]
+NIXPACKS_INSTALL_CMD = "npm install --legacy-peer-deps"
