@@ -37,7 +37,7 @@
                     <label class="block font-bold text-slate-500 mb-1.5 uppercase tracking-wider text-[9px]">Registros del Lote (CSV: Cédula, Nombre, Apellido)</label>
                     <textarea name="raw_records" rows="8" required
                               class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 font-mono text-xs text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
-                              placeholder="22500756150,Frederik,Lopez&#10;22500756159,Juan,Gomez&#10;22500756158,Pedro,Ramirez"></textarea>
+                              placeholder="22500756150,Juan,Perez&#10;22500756159,Juan,Gomez&#10;22500756158,Pedro,Ramirez"></textarea>
                 </div>
 
                 <button type="submit" class="w-full bg-[#041e49] text-white rounded-full py-2.5 font-bold hover:bg-slate-800 transition shadow-xs text-center block">

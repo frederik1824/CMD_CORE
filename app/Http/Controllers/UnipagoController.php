@@ -317,4 +317,64 @@ class UnipagoController extends Controller
 
         return view('ars.unipago.notificaciones', compact('notificaciones'));
     }
+
+    public function procesosAfiliacion()
+    {
+        $lotes = AffiliationBatch::where('batch_type', 'titulares')->orderBy('created_at', 'desc')->paginate(15);
+        return view('ars.unipago.procesos_afiliacion', compact('lotes'));
+    }
+
+    public function procesosNovedades()
+    {
+        $lotes = AffiliationBatch::where('batch_type', 'dependientes')->orderBy('created_at', 'desc')->paginate(15);
+        return view('ars.unipago.procesos_novedades', compact('lotes'));
+    }
+
+    public function consultasCiudadanos()
+    {
+        $afiliados = Afiliado::paginate(15);
+        return view('ars.unipago.consultas_ciudadanos', compact('afiliados'));
+    }
+
+    public function notificacionCartera()
+    {
+        $notificaciones = UnipagoMockNotification::paginate(15);
+        return view('ars.unipago.notificacion_cartera', compact('notificaciones'));
+    }
+
+    public function notificacionCobertura()
+    {
+        $notificaciones = UnipagoMockNotification::paginate(15);
+        return view('ars.unipago.notificacion_cobertura', compact('notificaciones'));
+    }
+
+    public function recaudo()
+    {
+        $dispersiones = DispersionCut::orderBy('created_at', 'desc')->paginate(15);
+        return view('ars.unipago.recaudo', compact('dispersiones'));
+    }
+
+    public function procesarRecaudo(Request $request)
+    {
+        $request->validate(['amount' => 'required|numeric']);
+        \App\Models\Bitacora::registrar("Unipago", "Recaudo Unipago procesado por DOP {$request->amount}");
+        return redirect()->back()->with('success', 'Recaudo Unipago procesado y conciliado.');
+    }
+
+    public function traspasos()
+    {
+        $traspasos = Afiliado::where('regimen_actual', 'Contributivo')->paginate(15);
+        return view('ars.unipago.traspasos', compact('traspasos'));
+    }
+
+    public function consultaProcesos()
+    {
+        $logs = UnipagoMockRequest::orderBy('created_at', 'desc')->paginate(15);
+        return view('ars.unipago.consulta_procesos', compact('logs'));
+    }
+
+    public function simulador()
+    {
+        return view('ars.unipago.simulador');
+    }
 }

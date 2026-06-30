@@ -175,6 +175,191 @@ Route::middleware(['auth'])->prefix('core')->name('ars.')->group(function () {
     Route::get('/reclamaciones/{id}', [ReclamacionController::class, 'show'])->name('reclamaciones.show');
     Route::post('/reclamaciones/{id}/auditar', [ReclamacionController::class, 'auditar'])->name('reclamaciones.auditar');
 
+    // Reclamaciones (Ampliación)
+    Route::get('/reclamaciones/radicaciones/lista', [ReclamacionController::class, 'radicaciones'])->name('reclamaciones.radicaciones');
+    Route::get('/reclamaciones/radicaciones/correcciones', [ReclamacionController::class, 'correcciones'])->name('reclamaciones.correcciones');
+    Route::post('/reclamaciones/radicaciones/correcciones/{id}', [ReclamacionController::class, 'corregirRadicacion'])->name('reclamaciones.corregir_radicacion');
+    Route::get('/reclamaciones/auditoria-retrospectiva', [ReclamacionController::class, 'auditoriaRetrospectiva'])->name('reclamaciones.auditoria_retrospectiva');
+    Route::get('/reclamaciones/auditoria-facturacion', [ReclamacionController::class, 'auditoriaFacturacion'])->name('reclamaciones.auditoria_facturacion');
+    Route::get('/reclamaciones/validaciones/lista', [ReclamacionController::class, 'validaciones'])->name('reclamaciones.validaciones');
+    Route::get('/reclamaciones/ncf/lista', [ReclamacionController::class, 'ncfIndex'])->name('reclamaciones.ncf');
+    Route::post('/reclamaciones/ncf/{id}', [ReclamacionController::class, 'corregirNcf'])->name('reclamaciones.corregir_ncf');
+    Route::get('/reclamaciones/lotes/lista', [ReclamacionController::class, 'lotesIndex'])->name('reclamaciones.lotes');
+    Route::post('/reclamaciones/lotes/generar', [ReclamacionController::class, 'generarLoteClaims'])->name('reclamaciones.generar_lote');
+    Route::get('/reclamaciones/lotes/ver/{id}', [ReclamacionController::class, 'verLoteClaims'])->name('reclamaciones.ver_lote');
+    Route::post('/reclamaciones/lotes/ncf/{id}', [ReclamacionController::class, 'corregirLoteNcf'])->name('reclamaciones.corregir_lote_ncf');
+    Route::get('/reclamaciones/glosas/lista', [ReclamacionController::class, 'glosasIndex'])->name('reclamaciones.glosas');
+    Route::get('/reclamaciones/notificaciones/lista', [ReclamacionController::class, 'notificaciones'])->name('reclamaciones.notificaciones');
+    Route::get('/reclamaciones/plantillas/lista', [ReclamacionController::class, 'plantillas'])->name('reclamaciones.plantillas');
+    Route::get('/reclamaciones/cuentas-por-pagar/lista', [ReclamacionController::class, 'cuentasPorPagar'])->name('reclamaciones.cuentas_por_pagar');
+
+    // PyP (Promoción y Prevención)
+    Route::get('/pyp/dashboard', [\App\Http\Controllers\PypController::class, 'dashboard'])->name('pyp.dashboard');
+    Route::get('/pyp/actividades-no-asistenciales', [\App\Http\Controllers\PypController::class, 'actividades'])->name('pyp.actividades');
+    Route::post('/pyp/actividades-no-asistenciales', [\App\Http\Controllers\PypController::class, 'guardarActividad'])->name('pyp.guardar_actividad');
+    Route::get('/pyp/grupos-riesgo', [\App\Http\Controllers\PypController::class, 'gruposRiesgo'])->name('pyp.grupos_riesgo');
+    Route::post('/pyp/grupos-riesgo', [\App\Http\Controllers\PypController::class, 'guardarGrupoRiesgo'])->name('pyp.guardar_grupo_riesgo');
+    Route::get('/pyp/factores-riesgo', [\App\Http\Controllers\PypController::class, 'factoresRiesgo'])->name('pyp.factores_riesgo');
+    Route::post('/pyp/factores-riesgo', [\App\Http\Controllers\PypController::class, 'guardarFactorRiesgo'])->name('pyp.guardar_factor_riesgo');
+    Route::get('/pyp/tipos-programas', [\App\Http\Controllers\PypController::class, 'tiposProgramas'])->name('pyp.tipos_programas');
+    Route::get('/pyp/programas', [\App\Http\Controllers\PypController::class, 'programas'])->name('pyp.programas');
+    Route::post('/pyp/programas', [\App\Http\Controllers\PypController::class, 'guardarPrograma'])->name('pyp.guardar_programa');
+    Route::get('/pyp/calendario', [\App\Http\Controllers\PypController::class, 'calendario'])->name('pyp.calendario');
+    Route::post('/pyp/calendario', [\App\Http\Controllers\PypController::class, 'guardarEventoCalendar'])->name('pyp.guardar_evento');
+    Route::get('/pyp/candidatos', [\App\Http\Controllers\PypController::class, 'candidatos'])->name('pyp.candidatos');
+    Route::post('/pyp/candidatos/{id}/enrolar', [\App\Http\Controllers\PypController::class, 'enrolarCandidato'])->name('pyp.enrolar_candidato');
+    Route::post('/pyp/candidatos/{id}/descartar', [\App\Http\Controllers\PypController::class, 'descartarCandidato'])->name('pyp.descartar_candidato');
+    Route::get('/pyp/inscripciones', [\App\Http\Controllers\PypController::class, 'inscripciones'])->name('pyp.inscripciones');
+    Route::post('/pyp/inscripciones', [\App\Http\Controllers\PypController::class, 'inscribirManual'])->name('pyp.inscribir_manual');
+    Route::get('/pyp/cancelaciones', [\App\Http\Controllers\PypController::class, 'cancelaciones'])->name('pyp.cancelaciones');
+    Route::post('/pyp/inscripciones/{id}/cancelar', [\App\Http\Controllers\PypController::class, 'cancelarInscripcion'])->name('pyp.cancelar_inscripcion');
+    Route::get('/pyp/reportes', [\App\Http\Controllers\PypController::class, 'reportes'])->name('pyp.reportes');
+
+    // Planes de Salud y Coberturas
+    Route::get('/planes-salud/planes', [\App\Http\Controllers\PlanesSaludController::class, 'planes'])->name('planes_salud.planes');
+    Route::post('/planes-salud/planes', [\App\Http\Controllers\PlanesSaludController::class, 'guardarPlan'])->name('planes_salud.guardar_plan');
+    Route::get('/planes-salud/catalogo-pdss', [\App\Http\Controllers\PlanesSaludController::class, 'catalogoPdss'])->name('planes_salud.catalogo_pdss');
+    Route::get('/planes-salud/catalogo-planes-alternativos', [\App\Http\Controllers\PlanesSaludController::class, 'catalogoAlternativos'])->name('planes_salud.catalogo_alternativos');
+    Route::get('/planes-salud/coberturas', [\App\Http\Controllers\PlanesSaludController::class, 'coberturas'])->name('planes_salud.coberturas');
+    Route::post('/planes-salud/coberturas', [\App\Http\Controllers\PlanesSaludController::class, 'guardarCobertura'])->name('planes_salud.guardar_cobertura');
+    Route::get('/planes-salud/detalle-servicio', [\App\Http\Controllers\PlanesSaludController::class, 'detalleServicio'])->name('planes_salud.detalle_servicio');
+    Route::get('/planes-salud/derivaciones', [\App\Http\Controllers\PlanesSaludController::class, 'derivaciones'])->name('planes_salud.derivaciones');
+    Route::post('/planes-salud/derivaciones', [\App\Http\Controllers\PlanesSaludController::class, 'guardarDerivacion'])->name('planes_salud.guardar_derivacion');
+    Route::get('/planes-salud/periodos-espera', [\App\Http\Controllers\PlanesSaludController::class, 'periodosEspera'])->name('planes_salud.periodos_espera');
+    Route::get('/planes-salud/topes', [\App\Http\Controllers\PlanesSaludController::class, 'topes'])->name('planes_salud.topes');
+    Route::post('/planes-salud/topes', [\App\Http\Controllers\PlanesSaludController::class, 'guardarTope'])->name('planes_salud.guardar_tope');
+    Route::get('/planes-salud/reportes', [\App\Http\Controllers\PlanesSaludController::class, 'reportes'])->name('planes_salud.reportes');
+
+    // Prestadores (Fortalecimiento)
+    Route::get('/prestadores/personas-fisicas', [\App\Http\Controllers\PrestadoresController::class, 'personasFisicas'])->name('prestadores.personas_fisicas');
+    Route::get('/prestadores/personas-juridicas', [\App\Http\Controllers\PrestadoresController::class, 'personasJuridicas'])->name('prestadores.personas_juridicas');
+    Route::post('/prestadores/guardar', [\App\Http\Controllers\PrestadoresController::class, 'guardarPrestador'])->name('prestadores.guardar');
+    Route::get('/prestadores/auditores-medicos', [\App\Http\Controllers\PrestadoresController::class, 'auditoresMedicos'])->name('prestadores.auditores_medicos');
+    Route::post('/prestadores/auditores-medicos', [\App\Http\Controllers\PrestadoresController::class, 'guardarAuditor'])->name('prestadores.guardar_auditor');
+    Route::get('/prestadores/servicios-contratados', [\App\Http\Controllers\PrestadoresController::class, 'serviciosContratados'])->name('prestadores.servicios_contratados');
+    Route::post('/prestadores/servicios-contratados', [\App\Http\Controllers\PrestadoresController::class, 'guardarServicioContratado'])->name('prestadores.guardar_servicio_contratado');
+    Route::get('/prestadores/convenios-precios', [\App\Http\Controllers\PrestadoresController::class, 'conveniosPrecios'])->name('prestadores.convenios_precios');
+    Route::get('/prestadores/precios-convenidos', [\App\Http\Controllers\PrestadoresController::class, 'preciosConvenidos'])->name('prestadores.precios_convenidos');
+    Route::post('/prestadores/precios-convenidos', [\App\Http\Controllers\PrestadoresController::class, 'guardarPrecioConvenido'])->name('prestadores.guardar_precio_convenido');
+    Route::get('/prestadores/grupos', [\App\Http\Controllers\PrestadoresController::class, 'grupos'])->name('prestadores.grupos');
+    Route::post('/prestadores/grupos', [\App\Http\Controllers\PrestadoresController::class, 'guardarGrupo'])->name('prestadores.guardar_grupo');
+    Route::get('/prestadores/red-por-plan', [\App\Http\Controllers\PrestadoresController::class, 'redPorPlan'])->name('prestadores.red_por_plan');
+    Route::post('/prestadores/red-por-plan', [\App\Http\Controllers\PrestadoresController::class, 'guardarRedPorPlan'])->name('prestadores.guardar_red_por_plan');
+    Route::get('/prestadores/habilitacion-servicios', [\App\Http\Controllers\PrestadoresController::class, 'habilitacionServicios'])->name('prestadores.habilitacion_servicios');
+    Route::get('/prestadores/georreferencial', [\App\Http\Controllers\PrestadoresController::class, 'georreferencial'])->name('prestadores.georreferencial');
+    Route::get('/prestadores/servicios-capitados/contratos', [\App\Http\Controllers\PrestadoresController::class, 'capitadosContratos'])->name('prestadores.capitados_contratos');
+    Route::post('/prestadores/servicios-capitados/contratos', [\App\Http\Controllers\PrestadoresController::class, 'guardarCapitadoContrato'])->name('prestadores.guardar_capitado_contrato');
+    Route::get('/prestadores/servicios-capitados/pagos', [\App\Http\Controllers\PrestadoresController::class, 'capitadosPagos'])->name('prestadores.capitados_pagos');
+    Route::post('/prestadores/servicios-capitados/pagos', [\App\Http\Controllers\PrestadoresController::class, 'guardarCapitadoPago'])->name('prestadores.guardar_capitado_pago');
+
+    // Afiliaciones (Completo)
+    Route::get('/afiliaciones/mantenimiento', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'mantenimiento'])->name('afiliaciones.mantenimiento');
+    Route::get('/afiliaciones/tipos-contratos', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'tiposContratos'])->name('afiliaciones.tipos_contratos');
+    Route::post('/afiliaciones/tipos-contratos', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'guardarTipoContrato'])->name('afiliaciones.guardar_tipo_contrato');
+    Route::get('/afiliaciones/titulares', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'solicitudesTitularesIndex'])->name('afiliaciones.titulares');
+    Route::get('/afiliaciones/dependientes', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'solicitudesDependientesIndex'])->name('afiliaciones.dependientes');
+    Route::get('/afiliaciones/traspasos', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'traspasos'])->name('afiliaciones.traspasos');
+    Route::post('/afiliaciones/traspasos', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'registrarTraspaso'])->name('afiliaciones.registrar_traspaso');
+    Route::get('/afiliaciones/consultas', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'consultas'])->name('afiliaciones.consultas');
+    Route::get('/afiliaciones/grupos', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'grupos'])->name('afiliaciones.grupos');
+    Route::post('/afiliaciones/grupos', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'guardarGrupo'])->name('afiliaciones.guardar_grupo');
+    Route::get('/afiliaciones/unidades-negocio', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'unidadesNegocio'])->name('afiliaciones.unidades_negocio');
+    Route::post('/afiliaciones/unidades-negocio', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'guardarUnidadNegocio'])->name('afiliaciones.guardar_unidad_negocio');
+    Route::get('/afiliaciones/transacciones', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'transacciones'])->name('afiliaciones.transacciones');
+    Route::get('/afiliaciones/archivos', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'archivos'])->name('afiliaciones.archivos');
+    Route::post('/afiliaciones/archivos/generar', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'generarArchivoNovedad'])->name('afiliaciones.generar_archivo');
+    Route::get('/afiliaciones/parentescos', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'parentescos'])->name('afiliaciones.parentescos');
+    Route::get('/afiliaciones/tipos-afiliacion', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'tiposAfiliacion'])->name('afiliaciones.tipos_afiliacion');
+    Route::get('/afiliaciones/codificacion-geografica', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'codificacionGeografica'])->name('afiliaciones.codificacion_geografica');
+    Route::post('/afiliaciones/codificacion-geografica', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'guardarCodificacionGeografica'])->name('afiliaciones.guardar_codificacion_geografica');
+    Route::get('/afiliaciones/reportes', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'reportes'])->name('afiliaciones.reportes');
+    Route::get('/afiliaciones/tipificacion', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'tipificacion'])->name('afiliaciones.tipificacion');
+
+    // Carnetización
+    Route::get('/carnetizacion/solicitudes', [\App\Http\Controllers\CarnetizacionController::class, 'solicitudes'])->name('carnetizacion.solicitudes');
+    Route::post('/carnetizacion/solicitudes', [\App\Http\Controllers\CarnetizacionController::class, 'crearSolicitud'])->name('carnetizacion.crear_solicitud');
+    Route::get('/carnetizacion/impresion', [\App\Http\Controllers\CarnetizacionController::class, 'impresion'])->name('carnetizacion.impresion');
+    Route::post('/carnetizacion/impresion/procesar', [\App\Http\Controllers\CarnetizacionController::class, 'procesarImpresion'])->name('carnetizacion.procesar_impresion');
+    Route::get('/carnetizacion/tipos-carnets', [\App\Http\Controllers\CarnetizacionController::class, 'tiposCarnets'])->name('carnetizacion.tipos_carnets');
+    Route::get('/carnetizacion/conceptos', [\App\Http\Controllers\CarnetizacionController::class, 'conceptos'])->name('carnetizacion.conceptos');
+    Route::get('/carnetizacion/entregas', [\App\Http\Controllers\CarnetizacionController::class, 'entregas'])->name('carnetizacion.entregas');
+    Route::post('/carnetizacion/entregas', [\App\Http\Controllers\CarnetizacionController::class, 'registrarEntrega'])->name('carnetizacion.registrar_entrega');
+    Route::get('/carnetizacion/transferencias', [\App\Http\Controllers\CarnetizacionController::class, 'transferencias'])->name('carnetizacion.transferencias');
+    Route::post('/carnetizacion/transferencias', [\App\Http\Controllers\CarnetizacionController::class, 'registrarTransferencia'])->name('carnetizacion.registrar_transferencia');
+    Route::get('/carnetizacion/localizaciones', [\App\Http\Controllers\CarnetizacionController::class, 'localizaciones'])->name('carnetizacion.localizaciones');
+    Route::get('/carnetizacion/centros-impresion', [\App\Http\Controllers\CarnetizacionController::class, 'centrosImpresion'])->name('carnetizacion.centros_impresion');
+    Route::post('/carnetizacion/centros-impresion', [\App\Http\Controllers\CarnetizacionController::class, 'guardarCentroImpresion'])->name('carnetizacion.guardar_centro_impresion');
+    Route::get('/carnetizacion/insumos', [\App\Http\Controllers\CarnetizacionController::class, 'insumos'])->name('carnetizacion.insumos');
+    Route::post('/carnetizacion/insumos', [\App\Http\Controllers\CarnetizacionController::class, 'guardarInsumo'])->name('carnetizacion.guardar_insumo');
+    Route::post('/carnetizacion/insumos/movimiento', [\App\Http\Controllers\CarnetizacionController::class, 'registrarMovimiento'])->name('carnetizacion.registrar_movimiento');
+    Route::get('/carnetizacion/ajustes', [\App\Http\Controllers\CarnetizacionController::class, 'ajustes'])->name('carnetizacion.ajustes');
+    Route::post('/carnetizacion/ajustes', [\App\Http\Controllers\CarnetizacionController::class, 'registrarAjuste'])->name('carnetizacion.registrar_ajuste');
+    Route::get('/carnetizacion/despachos', [\App\Http\Controllers\CarnetizacionController::class, 'despachos'])->name('carnetizacion.despachos');
+    Route::get('/carnetizacion/devoluciones', [\App\Http\Controllers\CarnetizacionController::class, 'devoluciones'])->name('carnetizacion.devoluciones');
+    Route::get('/carnetizacion/reportes', [\App\Http\Controllers\CarnetizacionController::class, 'reportes'])->name('carnetizacion.reportes');
+
+    // Unipago (Completo)
+    Route::get('/unipago/procesos-afiliacion', [\App\Http\Controllers\UnipagoController::class, 'procesosAfiliacion'])->name('unipago.procesos_afiliacion');
+    Route::get('/unipago/procesos-novedades', [\App\Http\Controllers\UnipagoController::class, 'procesosNovedades'])->name('unipago.procesos_novedades');
+    Route::get('/unipago/consultas-ciudadanos', [\App\Http\Controllers\UnipagoController::class, 'consultasCiudadanos'])->name('unipago.consultas_ciudadanos');
+    Route::get('/unipago/notificacion-cartera', [\App\Http\Controllers\UnipagoController::class, 'notificacionCartera'])->name('unipago.notificacion_cartera');
+    Route::get('/unipago/notificacion-cobertura', [\App\Http\Controllers\UnipagoController::class, 'notificacionCobertura'])->name('unipago.notificacion_cobertura');
+    Route::get('/unipago/recaudo', [\App\Http\Controllers\UnipagoController::class, 'recaudo'])->name('unipago.recaudo');
+    Route::post('/unipago/recaudo/procesar', [\App\Http\Controllers\UnipagoController::class, 'procesarRecaudo'])->name('unipago.procesar_recaudo');
+    Route::get('/unipago/traspasos', [\App\Http\Controllers\UnipagoController::class, 'traspasos'])->name('unipago.traspasos');
+    Route::get('/unipago/consulta-processes', [\App\Http\Controllers\UnipagoController::class, 'consultaProcesos'])->name('unipago.consulta_procesos');
+    Route::get('/unipago/simulador', [\App\Http\Controllers\UnipagoController::class, 'simulador'])->name('unipago.simulador_core');
+
+    // Promotores
+    Route::get('/promotores/personas-fisicas', [\App\Http\Controllers\PromotoresController::class, 'personasFisicas'])->name('promotores.personas_fisicas');
+    Route::get('/promotores/empresas', [\App\Http\Controllers\PromotoresController::class, 'empresas'])->name('promotores.empresas');
+    Route::post('/promotores/guardar', [\App\Http\Controllers\PromotoresController::class, 'guardarPromotor'])->name('promotores.guardar');
+    Route::get('/promotores/tipos-contratos', [\App\Http\Controllers\PromotoresController::class, 'tiposContratos'])->name('promotores.tipos_contratos');
+    Route::post('/promotores/tipos-contratos', [\App\Http\Controllers\PromotoresController::class, 'guardarContrato'])->name('promotores.guardar_contrato');
+    Route::get('/promotores/campanas', [\App\Http\Controllers\PromotoresController::class, 'campanas'])->name('promotores.campanas');
+    Route::post('/promotores/campanas', [\App\Http\Controllers\PromotoresController::class, 'guardarCampana'])->name('promotores.guardar_campana');
+    Route::get('/promotores/esquemas-comisiones-campana', [\App\Http\Controllers\PromotoresController::class, 'esquemasCampana'])->name('promotores.esquemas_campana');
+    Route::get('/promotores/calculo-comisiones-campana', [\App\Http\Controllers\PromotoresController::class, 'calculoCampana'])->name('promotores.calculo_campana');
+    Route::post('/promotores/comisiones/calcular', [\App\Http\Controllers\PromotoresController::class, 'calcularComisiones'])->name('promotores.calcular_commisiones');
+    Route::get('/promotores/tipos-gestion', [\App\Http\Controllers\PromotoresController::class, 'tiposGestion'])->name('promotores.tipos_gestion');
+    Route::get('/promotores/esquemas-comisiones-gestion', [\App\Http\Controllers\PromotoresController::class, 'esquemasGestion'])->name('promotores.esquemas_gestion');
+    Route::get('/promotores/calculo-comisiones-gestion', [\App\Http\Controllers\PromotoresController::class, 'calculoGestion'])->name('promotores.calculo_gestion');
+    Route::get('/promotores/reportes', [\App\Http\Controllers\PromotoresController::class, 'reportes'])->name('promotores.reportes');
+    Route::get('/promotores/tipificacion', [\App\Http\Controllers\PromotoresController::class, 'tipificacion'])->name('promotores.tipificacion');
+
+    // SISALRIL
+    Route::get('/sisalril/esquema-31', [\App\Http\Controllers\SisalrilController::class, 'esquema31'])->name('sisalril.esquema31');
+    Route::get('/sisalril/esquema-33', [\App\Http\Controllers\SisalrilController::class, 'esquema33'])->name('sisalril.esquema33');
+    Route::get('/sisalril/esquema-34', [\App\Http\Controllers\SisalrilController::class, 'esquema34'])->name('sisalril.esquema34');
+    Route::get('/sisalril/reportes', [\App\Http\Controllers\SisalrilController::class, 'reportes'])->name('sisalril.reportes');
+    Route::get('/sisalril/exportaciones', [\App\Http\Controllers\SisalrilController::class, 'exportaciones'])->name('sisalril.exportaciones');
+    Route::post('/sisalril/exportar/{esquema}', [\App\Http\Controllers\SisalrilController::class, 'exportarEsquema'])->name('sisalril.exportar');
+
+    // Facturación
+    Route::get('/facturacion', [\App\Http\Controllers\FacturacionBaseController::class, 'index'])->name('facturacion.index');
+    Route::get('/facturacion/planes-alternativos', [\App\Http\Controllers\FacturacionBaseController::class, 'planesAlternativos'])->name('facturacion.planes_alternativos');
+    Route::get('/facturacion/grupos-afiliados', [\App\Http\Controllers\FacturacionBaseController::class, 'gruposAfiliados'])->name('facturacion.grupos_afiliados');
+    Route::get('/facturacion/comprobantes', [\App\Http\Controllers\FacturacionBaseController::class, 'comprobantes'])->name('facturacion.comprobantes');
+    Route::post('/facturacion/emitir', [\App\Http\Controllers\FacturacionBaseController::class, 'emitirFactura'])->name('facturacion.emitir');
+
+    // Servicio al Cliente
+    Route::get('/servicio-cliente', [\App\Http\Controllers\ServicioClienteBaseController::class, 'index'])->name('servicio_cliente.index');
+    Route::get('/servicio-cliente/casos', [\App\Http\Controllers\ServicioClienteBaseController::class, 'casos'])->name('servicio_cliente.casos');
+    Route::post('/servicio-cliente/casos', [\App\Http\Controllers\ServicioClienteBaseController::class, 'registrarCaso'])->name('servicio_cliente.registrar_caso');
+    Route::get('/servicio-cliente/seguimiento', [\App\Http\Controllers\ServicioClienteBaseController::class, 'seguimiento'])->name('servicio_cliente.seguimiento');
+    // Corregido nombre de ruta para consistencia con el controlador
+    Route::post('/servicio-cliente/casos/{id}/resolver', [\App\Http\Controllers\ServicioClienteBaseController::class, 'resolverCaso'])->name('servicio_cliente.resolver_caso');
+
+    // Catálogos Generales
+    Route::get('/catalogos', [\App\Http\Controllers\CatalogosGeneralesController::class, 'index'])->name('catalogos.index');
+    Route::get('/catalogos/ver/{grupo}', [\App\Http\Controllers\CatalogosGeneralesController::class, 'verGrupo'])->name('catalogos.ver');
+    Route::post('/catalogos/guardar', [\App\Http\Controllers\CatalogosGeneralesController::class, 'guardarItem'])->name('catalogos.guardar');
+    Route::post('/catalogos/toggle/{id}', [\App\Http\Controllers\CatalogosGeneralesController::class, 'toggleStatus'])->name('catalogos.toggle');
+
+    // Reportes Generales
+    Route::get('/reportes-generales', [\App\Http\Controllers\ReportesGeneralesController::class, 'index'])->name('reportes_generales.index');
+    Route::post('/reportes-generales/programar', [\App\Http\Controllers\ReportesGeneralesController::class, 'programarReporte'])->name('reportes_generales.programar');
+
     // Pagos
     Route::get('/pagos/cxp', [PagoController::class, 'cxpIndex'])->name('pagos.cxp');
     Route::get('/pagos/lotes', [PagoController::class, 'lotesIndex'])->name('lotes.index');

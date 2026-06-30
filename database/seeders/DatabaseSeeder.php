@@ -419,21 +419,21 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Afiliado de prueba solicitado por el usuario: FREDERIK LOPEZ ALCANTARA
+        // Afiliado de prueba solicitado por el usuario: JUAN PEREZ ALCANTARA
         Afiliado::create([
             'tipo_identificacion_id' => $tipoIdCed,
             'cedula' => '07900175907',
             'nss' => '10790017590',
             'nui' => '30790017590',
-            'nombres' => 'FREDERIK',
-            'primer_apellido' => 'LOPEZ',
+            'nombres' => 'JUAN',
+            'primer_apellido' => 'PEREZ',
             'segundo_apellido' => 'ALCANTARA',
             'fecha_nacimiento' => '1992-09-18',
             'sexo' => 'M',
             'provincia' => 'Distrito Nacional',
             'municipio' => 'Santo Domingo de Guzmán',
             'telefono' => '829-555-1234',
-            'correo' => 'frederik.lopez@correo.com',
+            'correo' => 'juan.perez@correo.com',
             'numero_contrato' => '008961897901', // Coincide con el screenshot (00896-18979-01)
             'fecha_suscripcion' => '2024-01-01',
             'estado_afiliacion' => 'OK',

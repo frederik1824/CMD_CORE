@@ -98,8 +98,8 @@ class UnipagoDemoSeeder extends Seeder
             }
         }
 
-        $allTitulares = Afiliado::all();
-        $allDependientes = Dependiente::all();
+        $allTitulares = Afiliado::pluck('id');
+        $allDependientes = Dependiente::pluck('id');
 
         echo "Generando 30 lotes de afiliación...\n";
         // 30 lotes de afiliación:
@@ -159,8 +159,8 @@ class UnipagoDemoSeeder extends Seeder
 
                 AffiliationBatchDetail::create([
                     'affiliation_batch_id' => $batch->id,
-                    'afiliado_id' => $type === 'titulares' ? $allTitulares->random()->id : null,
-                    'dependiente_id' => $type === 'dependientes' ? $allDependientes->random()->id : null,
+                    'afiliado_id' => $type === 'titulares' ? $allTitulares->random() : null,
+                    'dependiente_id' => $type === 'dependientes' ? $allDependientes->random() : null,
                     'request_number' => 'REQ-' . rand(1000, 9999),
                     'contract_number' => 'CON-' . rand(1000, 9999),
                     'status' => $recStatus,
@@ -204,12 +204,12 @@ class UnipagoDemoSeeder extends Seeder
 
             // Generar 40 cápitas dispersadas (DI) por corte
             for ($k = 1; $k <= 40; $k++) {
-                $afiliado = $allTitulares->random();
+                $afiliadoId = $allTitulares->random();
                 $capitaNum = 'CAP-SEEDER-' . $period . '-' . str_pad($capitaIndex, 6, '0', STR_PAD_LEFT);
 
                 $cn = CapitationNotification::create([
                     'notification_number' => $capitaNum,
-                    'afiliado_id' => $afiliado->id,
+                    'afiliado_id' => $afiliadoId,
                     'period' => $period,
                     'capitation_amount' => 1450.50,
                     'individualization_type' => 'Capita Normal',
@@ -222,7 +222,7 @@ class UnipagoDemoSeeder extends Seeder
                 DispersionCutDetail::create([
                     'dispersion_cut_id' => $cut->id,
                     'capitation_notification_id' => $cn->id,
-                    'afiliado_id' => $afiliado->id,
+                    'afiliado_id' => $afiliadoId,
                     'amount' => 1450.50,
                     'status' => 'DI'
                 ]);
@@ -234,12 +234,12 @@ class UnipagoDemoSeeder extends Seeder
         // Generar 210 cápitas adicionales (para completar las 250 confirmadas (IC) y 10 rechazadas (IR))
         // Estas estarán en periodos sueltos y no metidas en cortes
         for ($k = 1; $k <= 50; $k++) {
-            $afiliado = $allTitulares->random();
+            $afiliadoId = $allTitulares->random();
             $period = '202606';
             $capitaNum = 'CAP-EXTRA-IC-' . str_pad($k, 6, '0', STR_PAD_LEFT);
             CapitationNotification::create([
                 'notification_number' => $capitaNum,
-                'afiliado_id' => $afiliado->id,
+                'afiliado_id' => $afiliadoId,
                 'period' => $period,
                 'capitation_amount' => 1450.50,
                 'individualization_type' => 'Capita Normal',
@@ -250,12 +250,12 @@ class UnipagoDemoSeeder extends Seeder
         }
 
         for ($k = 1; $k <= 10; $k++) {
-            $afiliado = $allTitulares->random();
+            $afiliadoId = $allTitulares->random();
             $period = '202606';
             $capitaNum = 'CAP-EXTRA-IR-' . str_pad($k, 6, '0', STR_PAD_LEFT);
             CapitationNotification::create([
                 'notification_number' => $capitaNum,
-                'afiliado_id' => $afiliado->id,
+                'afiliado_id' => $afiliadoId,
                 'period' => $period,
                 'capitation_amount' => 1450.50,
                 'individualization_type' => 'Capita Normal',

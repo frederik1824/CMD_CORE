@@ -10,111 +10,103 @@ use App\Models\CapitationNotification;
 use App\Models\DispersionCut;
 use App\Models\DispersionCutDetail;
 use App\Models\UnipagoMockNotification;
+use App\Models\PypRiskGroup;
+use App\Models\PypRiskFactor;
+use App\Models\PypProgram;
+use App\Models\PypProgramCandidate;
+use App\Models\PypProgramEnrollment;
+use App\Models\PypProgramCalendar;
+use App\Models\HealthPlan;
+use App\Models\HealthPlanCoverage;
+use App\Models\CoverageDerivationRule;
+use App\Models\CoverageLimit;
+use App\Models\ProviderGroup;
+use App\Models\ProviderNetwork;
+use App\Models\ProviderContractedService;
+use App\Models\ProviderPriceAgreement;
+use App\Models\ProviderGeoLocation;
+use App\Models\CapitatedServiceContract;
+use App\Models\CapitatedServicePayment;
+use App\Models\AffiliateGroup;
+use App\Models\AffiliateContract;
+use App\Models\BusinessUnit;
+use App\Models\GeographicCode;
+use App\Models\AffiliateTransaction;
+use App\Models\PrintingCenter;
+use App\Models\PrintingSupply;
+use App\Models\PrintingSupplyMovement;
+use App\Models\CarnetRequest;
+use App\Models\CarnetDelivery;
+use App\Models\CarnetTransfer;
+use App\Models\CarnetAdjustment;
+use App\Models\Promoter;
+use App\Models\PromoterContract;
+use App\Models\PromoterCampaign;
+use App\Models\PromoterCommission;
+use App\Models\BillingInvoice;
+use App\Models\CustomerCase;
+use App\Models\Pss;
+use App\Models\ServicioMedico;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class MassiveDataSeeder extends Seeder
 {
-    private array $nombresM = [
-        'Luis','Carlos','José','Juan','Miguel','Manuel','Ramón','Francisco','Rafael','Pedro',
-        'David','Jorge','Julio','Ángel','Roberto','Eduardo','Héctor','Mario','Rubén','Alejandro',
-        'Daniel','Fernando','Ricardo','Alberto','Raúl','Antonio','Enrique','Sergio','Andrés','Oscar',
-        'Eugenio','Germán','Jaime','Arturo','Félix','Guillermo','Víctor','Ernesto','René','Samuel',
-        'Tomás','Emilio','Gilberto','Nelson','Rogelio','Reinaldo','César','Iván','Belisario','Leandro',
-    ];
-
-    private array $nombresF = [
-        'María','Ana','Carmen','Juana','Rosa','Francisca','Yolanda','Margarita','Luz','Sandra',
-        'Patricia','Elizabeth','Laura','Carolina','Diana','Marta','Teresa','Clara','Elena','Sofía',
-        'Beatriz','Raquel','Julia','Isabel','Mónica','Adriana','Claudia','Silvia','Verónica','Lucía',
-        'Gloria','Cristina','Alejandra','Andrea','Bárbara','Daniela','Esther','Gabriela','Irene','Karen',
-        'Leticia','Melissa','Natalia','Olga','Paula','Rocío','Susana','Valeria','Vanessa','Xiomara',
-    ];
-
-    private array $apellidos = [
-        'Martínez','Rodríguez','Gómez','Pérez','Sánchez','Díaz','Fernández','Álvarez','Cruz','Ramírez',
-        'Flores','Vázquez','Guzmán','Ortiz','Castillo','Reyes','Ramos','Espinal','Vargas','Jiménez',
-        'Mejía','Castro','Arias','Santos','Brito','Hernández','López','Mendoza','Núñez','Peña',
-        'Bautista','Cordero','De León','Durán','Espinosa','Franco','García','Henríquez','Izquierdo','Lara',
-        'Medina','Nova','Olivo','Paredes','Quiroz','Rivera','Sosa','Torres','Ureña','Valdez',
-    ];
-
-    private array $provinciasMunicipios = [
-        'Distrito Nacional|Santo Domingo de Guzmán',
-        'Santo Domingo|Santo Domingo Este',
-        'Santiago|Santiago de los Caballeros',
-        'San Cristóbal|San Cristóbal',
-        'La Altagracia|Salvaleón de Higüey',
-        'Duarte|San Francisco de Macorís',
-        'Puerto Plata|San Felipe de Puerto Plata',
-        'La Vega|Concepción de La Vega',
-        'San Pedro de Macorís|San Pedro de Macorís',
-        'La Romana|La Romana',
-        'Hato Mayor|Hato Mayor del Rey',
-        'Monte Plata|Monte Plata',
-        'Monseñor Nouel|Bonao',
-        'Samaná|Samaná',
-        'Espaillat|Moca',
-        'Hermanas Mirabal|Salcedo',
-        'Valverde|Mao',
-        'Dajabón|Dajabón',
-        'Peravia|Baní',
-        'Azua|Azua de Compostela',
-    ];
-
-    private int $tipoIdCed = 0;
-    private int $parentescoConyuge = 0;
-    private int $parentescoHijo = 0;
+    private array $nombresM = ['Luis','Carlos','José','Juan','Miguel','Manuel','Ramón','Francisco','Rafael','Pedro','David','Jorge','Julio','Ángel','Roberto'];
+    private array $nombresF = ['María','Ana','Carmen','Juana','Rosa','Francisca','Yolanda','Margarita','Luz','Sandra','Patricia','Elizabeth','Laura','Carolina'];
+    private array $apellidos = ['Martínez','Rodríguez','Gómez','Pérez','Sánchez','Díaz','Fernández','Álvarez','Cruz','Ramírez','Flores','Vázquez','Guzmán','Ortiz'];
+    private array $provincias = ['Distrito Nacional', 'Santo Domingo', 'Santiago', 'San Cristóbal', 'La Altagracia'];
+    private array $sectores = ['Piantini', 'Naco', 'Bella Vista', 'Evaristo Morales', 'Los Prados'];
 
     public function run(): void
     {
         DB::statement('PRAGMA journal_mode=WAL');
         DB::statement('PRAGMA busy_timeout=5000');
 
-        $this->tipoIdCed = Catalogo::where('grupo', 'tipo_identificacion')->where('codigo', 'CED')->first()->id;
-        $this->parentescoConyuge = Catalogo::where('grupo', 'parentesco')->where('codigo', 'CONYUGE')->first()->id;
-        $this->parentescoHijo = Catalogo::where('grupo', 'parentesco')->where('codigo', 'HIJO')->first()->id;
+        $tipoIdCed = Catalogo::where('grupo', 'tipo_identificacion')->where('codigo', 'CED')->first()->id ?? 1;
+        $parentescoConyuge = Catalogo::where('grupo', 'parentesco')->where('codigo', 'CONYUGE')->first()->id ?? 2;
+        $parentescoHijo = Catalogo::where('grupo', 'parentesco')->where('codigo', 'HIJO')->first()->id ?? 3;
 
-        $this->command->info("Creando 5,000 afiliados...");
-        $affiliateIds = $this->createAffiliates(5000);
-        $this->command->info("Total afiliados: " . Afiliado::count());
+        // 1. CREACIÓN EXPLICITA DE AFILIADO DE PRUEBAS OBLIGATORIO
+        $this->command->info("Creando afiliado de pruebas obligatorios...");
+        $frederik = Afiliado::updateOrCreate(
+            ['nss' => '10790017590'],
+            [
+                'tipo_identificacion_id' => $tipoIdCed,
+                'cedula' => '07900175907',
+                'nui' => '30790017590',
+                'nombres' => 'JUAN',
+                'primer_apellido' => 'PEREZ',
+                'segundo_apellido' => 'ALCANTARA',
+                'fecha_nacimiento' => '1990-05-15',
+                'sexo' => 'M',
+                'provincia' => 'Distrito Nacional',
+                'municipio' => 'Santo Domingo de Guzmán',
+                'telefono' => '809-555-0192',
+                'correo' => 'juan.perez@correo.com',
+                'numero_contrato' => '008961897901',
+                'fecha_suscripcion' => '2020-01-01',
+                'estado_afiliacion' => 'OK',
+                'motivo_estado' => 'Afiliado principal de pruebas.',
+                'activo_nomina' => true,
+                'tiene_aporte' => true,
+                'regimen_actual' => 'Contributivo',
+                'entidad_actual' => 'ARS Core Demo',
+                'esta_carnetizado' => true,
+                'tiene_formulario' => true,
+                'sector' => 'Piantini',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]
+        );
 
-        $this->command->info("Creando ~4,500 dependientes...");
-        $this->createDependents($affiliateIds);
-        $this->command->info("Total dependientes: " . Dependiente::count());
-
-        $this->command->info("Creando notificaciones de capitación (6 periodos)...");
-        $this->createCapitationNotifications(6);
-        $this->command->info("Total capitaciones: " . CapitationNotification::count());
-
-        $this->command->info("Creando cortes de dispersión...");
-        $this->createDispersionCuts();
-        $this->command->info("Total cortes: " . DispersionCut::count());
-        $this->command->info("Total detalles: " . DispersionCutDetail::count());
-
-        $this->command->info("Creando notificaciones Unipago...");
-        $this->createNotifications();
-        $this->command->info("Total notificaciones: " . UnipagoMockNotification::count());
-
-        $total = Afiliado::count() + Dependiente::count() + CapitationNotification::count()
-            + DispersionCut::count() + DispersionCutDetail::count() + UnipagoMockNotification::count();
-
-        $this->command->info("=== RESUMEN ===");
-        $this->command->info("  Afiliados:         " . number_format(Afiliado::count()));
-        $this->command->info("  Dependientes:      " . number_format(Dependiente::count()));
-        $this->command->info("  Capitaciones:      " . number_format(CapitationNotification::count()));
-        $this->command->info("  Cortes dispersión: " . DispersionCut::count());
-        $this->command->info("  Detalles dispersión:" . number_format(DispersionCutDetail::count()));
-        $this->command->info("  Notificaciones:    " . number_format(UnipagoMockNotification::count()));
-        $this->command->info("  TOTAL:             " . number_format($total));
-    }
-
-    private function createAffiliates(int $count): array
-    {
-        $allIds = [];
-        $batchSize = 500;
-
-        for ($start = 1; $start <= $count; $start += $batchSize) {
-            $end = min($start + $batchSize - 1, $count);
+        // 2. POBLAR 40,000 AFILIADOS
+        $this->command->info("Poblando 40,000 afiliados...");
+        $batchSize = 35;
+        $totalAffiliates = 40000;
+        
+        for ($start = 1; $start <= $totalAffiliates; $start += $batchSize) {
+            $end = min($start + $batchSize - 1, $totalAffiliates);
             $batch = [];
 
             for ($i = $start; $i <= $end; $i++) {
@@ -122,314 +114,381 @@ class MassiveDataSeeder extends Seeder
                 $nombre = ($sexo === 'F') ? $this->nombresF[array_rand($this->nombresF)] : $this->nombresM[array_rand($this->nombresM)];
                 $ape1 = $this->apellidos[array_rand($this->apellidos)];
                 $ape2 = $this->apellidos[array_rand($this->apellidos)];
-                $loc = $this->provinciasMunicipios[array_rand($this->provinciasMunicipios)];
-                [$prov, $mun] = explode('|', $loc);
-
-                $estado = $this->weightedRandom(['OK' => 7, 'PE' => 1, 'RE' => 1, 'Pendiente' => 1]);
-                $regimen = $this->weightedRandom(['Contributivo' => 2, 'Subsidiado' => 1, 'Subsidiado Parcial' => 1]);
-
-                $motivo = match ($estado) {
-                    'OK' => 'Afiliado aprobado por Unipago.',
-                    'PE' => 'Pendiente de validación Unipago.',
-                    'RE' => 'Sin nómina activa reportada en TSS.',
-                    default => 'Pendiente de revisión.',
-                };
+                $prov = $this->provincias[array_rand($this->provincias)];
 
                 $batch[] = [
-                    'tipo_identificacion_id' => $this->tipoIdCed,
-                    'cedula' => '402' . str_pad($i, 7, '0', STR_PAD_LEFT) . mt_rand(0, 9),
-                    'nss' => '1' . str_pad($i, 9, '0', STR_PAD_LEFT),
-                    'nui' => '3' . str_pad(10000000 + $i, 8, '0', STR_PAD_LEFT),
+                    'tipo_identificacion_id' => $tipoIdCed,
+                    'cedula' => '402' . str_pad($i + 5000, 7, '0', STR_PAD_LEFT) . mt_rand(0, 9),
+                    'nss' => '1' . str_pad($i + 5000, 9, '0', STR_PAD_LEFT),
+                    'nui' => '3' . str_pad(10000000 + $i + 5000, 8, '0', STR_PAD_LEFT),
                     'nombres' => $nombre,
                     'primer_apellido' => $ape1,
                     'segundo_apellido' => $ape2,
-                    'fecha_nacimiento' => now()->subYears(mt_rand(18, 72))->subDays(mt_rand(0, 364))->toDateString(),
+                    'fecha_nacimiento' => now()->subYears(mt_rand(18, 65))->subDays(mt_rand(0, 360))->toDateString(),
                     'sexo' => $sexo,
                     'provincia' => $prov,
-                    'municipio' => $mun,
-                    'telefono' => '809-' . str_pad(mt_rand(200, 999), 3, '0', STR_PAD_LEFT) . '-' . str_pad(mt_rand(1000, 9999), 4, '0', STR_PAD_LEFT),
-                    'correo' => strtolower($nombre . '.' . $ape1 . mt_rand(1, 9999) . '@correo.com'),
-                    'numero_contrato' => 'CONTR-ARS-' . str_pad(10000 + $i, 8, '0', STR_PAD_LEFT),
-                    'fecha_suscripcion' => now()->subYears(mt_rand(1, 5))->subDays(mt_rand(0, 364))->toDateString(),
-                    'estado_afiliacion' => $estado,
-                    'motivo_estado' => $motivo,
-                    'activo_nomina' => ($estado === 'OK'),
-                    'tiene_aporte' => ($estado === 'OK'),
-                    'regimen_actual' => $regimen,
+                    'municipio' => $prov . ' Municipio',
+                    'telefono' => '809-' . mt_rand(200, 999) . '-' . mt_rand(1000, 9999),
+                    'correo' => strtolower($nombre . '.' . $ape1 . $i . '@correo.com'),
+                    'numero_contrato' => 'CONTR-ARS-' . str_pad($i + 5000, 8, '0', STR_PAD_LEFT),
+                    'fecha_suscripcion' => now()->subYears(mt_rand(1, 4))->toDateString(),
+                    'estado_afiliacion' => 'OK',
+                    'motivo_estado' => 'Aprobado Unipago.',
+                    'activo_nomina' => true,
+                    'tiene_aporte' => true,
+                    'regimen_actual' => 'Contributivo',
                     'entidad_actual' => 'ARS Core Demo',
-                    'tipo_afiliacion' => ($estado === 'OK') ? $this->weightedRandom(['Normal' => 2, 'Automatica' => 1, 'Traspaso' => 1]) : null,
-                    'fecha_afiliacion' => ($estado === 'OK') ? now()->subMonths(mt_rand(1, 36))->toDateString() : null,
-                    'ultimo_periodo_pagado' => ($estado === 'OK') ? now()->subMonth(mt_rand(0, 2))->format('Ym') : null,
-                    'created_at' => now()->subDays(mt_rand(0, 365)),
-                    'updated_at' => now(),
+                    'esta_carnetizado' => (mt_rand(1, 10) > 2),
+                    'tiene_formulario' => true,
+                    'sector' => $this->sectores[array_rand($this->sectores)],
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ];
             }
-
-            DB::transaction(function () use ($batch) {
+            DB::transaction(function() use ($batch) {
                 Afiliado::insert($batch);
             });
-
-            $latestIds = Afiliado::orderBy('id', 'desc')->take(count($batch))->pluck('id')->reverse()->toArray();
-            $allIds = array_merge($allIds, $latestIds);
         }
+        $this->command->info("Total Afiliados en DB: " . Afiliado::count());
 
-        return $allIds;
-    }
-
-    private function createDependents(array $affiliateIds): void
-    {
+        // 3. POBLAR 40,000 DEPENDIENTES
+        $this->command->info("Poblando 40,000 dependientes...");
+        $titularIds = Afiliado::pluck('id')->toArray();
+        $totalDeps = 40000;
         $batch = [];
-        $batchSize = 500;
-        $count = 0;
-        $maxDeps = 4500;
+        $batchSize = 35;
 
-        foreach ($affiliateIds as $afId) {
-            if ($count >= $maxDeps) break;
+        for ($i = 1; $i <= $totalDeps; $i++) {
+            $titularId = $titularIds[array_rand($titularIds)];
+            $sexo = (mt_rand(0, 1) === 0) ? 'M' : 'F';
+            $nombre = ($sexo === 'F') ? $this->nombresF[array_rand($this->nombresF)] : $this->nombresM[array_rand($this->nombresM)];
+            $ape = $this->apellidos[array_rand($this->apellidos)] . ' ' . $this->apellidos[array_rand($this->apellidos)];
+            $parentesco = (mt_rand(0, 1) === 0) ? $parentescoConyuge : $parentescoHijo;
 
-            $numDeps = mt_rand(0, 3);
-            for ($d = 0; $d < $numDeps && $count < $maxDeps; $d++) {
-                $sexo = (mt_rand(0, 1) === 0) ? 'M' : 'F';
-                $nombre = ($sexo === 'F') ? $this->nombresF[array_rand($this->nombresF)] : $this->nombresM[array_rand($this->nombresM)];
-                $edad = mt_rand(1, 65);
-                $parentescoId = ($d === 0 && $edad > 17 && $edad < 65) ? $this->parentescoConyuge : $this->parentescoHijo;
-                $estado = (mt_rand(1, 10) > 2) ? 'OK' : 'RE';
+            $batch[] = [
+                'titular_id' => $titularId,
+                'tipo_identificacion_id' => $tipoIdCed,
+                'cedula' => '001' . str_pad($i + 5000, 7, '0', STR_PAD_LEFT) . mt_rand(0, 9),
+                'nss' => '2' . str_pad($i + 5000, 9, '0', STR_PAD_LEFT),
+                'nui' => '3' . str_pad(20000000 + $i + 5000, 8, '0', STR_PAD_LEFT),
+                'nombres' => $nombre,
+                'apellidos' => $ape,
+                'fecha_nacimiento' => now()->subYears(mt_rand(1, 25))->toDateString(),
+                'sexo' => $sexo,
+                'parentesco_id' => $parentesco,
+                'tipo_dependiente' => 'Directo',
+                'estudiante' => (mt_rand(1, 10) > 8),
+                'discapacitado' => (mt_rand(1, 100) < 3),
+                'nacionalidad' => 'Dominicana',
+                'requiere_documento' => true,
+                'estado_afiliacion' => 'OK',
+                'motivo_estado' => 'Aprobado Unipago.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
 
-                $batch[] = [
-                    'titular_id' => $afId,
-                    'tipo_identificacion_id' => $this->tipoIdCed,
-                    'cedula' => '001' . str_pad($afId * 10 + $d, 7, '0', STR_PAD_LEFT) . mt_rand(0, 9),
-                    'nss' => '2' . str_pad($afId * 10 + $d, 9, '0', STR_PAD_LEFT),
-                    'nui' => '3' . str_pad(20000000 + ($afId * 10 + $d), 8, '0', STR_PAD_LEFT),
-                    'nombres' => $nombre,
-                    'apellidos' => $this->apellidos[array_rand($this->apellidos)] . ' ' . $this->apellidos[array_rand($this->apellidos)],
-                    'fecha_nacimiento' => now()->subYears($edad)->subDays(mt_rand(0, 364))->toDateString(),
-                    'sexo' => $sexo,
-                    'parentesco_id' => $parentescoId,
-                    'tipo_dependiente' => 'Directo',
-                    'estudiante' => ($edad >= 18 && $edad <= 25 && mt_rand(0, 1) === 1),
-                    'discapacitado' => (mt_rand(1, 100) <= 3),
-                    'nacionalidad' => 'Dominicana',
-                    'requiere_documento' => true,
-                    'estado_afiliacion' => $estado,
-                    'motivo_estado' => ($estado === 'OK') ? 'Dependiente aprobado por Unipago.' : 'Dependiente no cumple criterios.',
-                    'created_at' => now()->subDays(mt_rand(0, 365)),
-                    'updated_at' => now(),
-                ];
-                $count++;
-
-                if (count($batch) >= $batchSize) {
-                    DB::transaction(function () use ($batch) { Dependiente::insert($batch); });
-                    $batch = [];
-                }
+            if (count($batch) >= $batchSize) {
+                DB::transaction(function() use ($batch) {
+                    Dependiente::insert($batch);
+                });
+                $batch = [];
             }
         }
-
         if (!empty($batch)) {
-            DB::transaction(function () use ($batch) { Dependiente::insert($batch); });
+            DB::transaction(function() use ($batch) {
+                Dependiente::insert($batch);
+            });
         }
-    }
+        $this->command->info("Total Dependientes en DB: " . Dependiente::count());
 
-    private function createCapitationNotifications(int $periods): void
-    {
-        $batch = [];
-        $batchSize = 1000;
-        $counter = 0;
-        $statusPool = ['DI','IC','IC','IC','IC','NT','IR','PE'];
-        $indivTypes = ['Capita Normal','Capita Normal','Capita Normal','Capita Especial','Capita Temporal'];
+        // 4. SEED PYP (PROMOCION Y PREVENCION)
+        $this->command->info("Seeding PyP Tables...");
+        $riskGroup = PypRiskGroup::create(['name' => 'Cardiopatías', 'description' => 'Pacientes propensos a riesgo cardiovascular.', 'criteria' => 'Mayor a 45 años']);
+        $riskFactor = PypRiskFactor::create(['name' => 'Tabaquismo', 'description' => 'Consumo diario de cigarrillos.']);
+        
+        $program = PypProgram::create([
+            'name' => 'Vida Sana Corazón',
+            'program_type' => 'Cardiovascular',
+            'risk_group_id' => $riskGroup->id,
+            'start_date' => '2026-01-01',
+            'status' => 'Activo'
+        ]);
 
-        for ($p = 0; $p < $periods; $p++) {
-            $periodDate = now()->subMonths($p);
-            $period = $periodDate->format('Ym');
+        PypProgramCandidate::create([
+            'program_id' => $program->id,
+            'affiliate_id' => $frederik->id,
+            'risk_group_id' => $riskGroup->id,
+            'detected_at' => '2026-06-25',
+            'status' => 'Detectado'
+        ]);
 
-            $afiliados = Afiliado::where('estado_afiliacion', 'OK')->pluck('id');
-            foreach ($afiliados as $afId) {
-                $counter++;
-                $amount = mt_rand(80000, 250000) / 100;
-                $status = $statusPool[array_rand($statusPool)];
+        PypProgramEnrollment::create([
+            'program_id' => $program->id,
+            'affiliate_id' => $frederik->id,
+            'enrollment_date' => '2026-06-28',
+            'status' => 'Activo'
+        ]);
 
-                $notifiedAt = $periodDate->copy()->addDays(mt_rand(1, 10));
-                $confirmedAt = in_array($status, ['IC','DI']) ? $notifiedAt->copy()->addDays(mt_rand(1, 5)) : null;
-                $rejectedAt = ($status === 'IR') ? $notifiedAt->copy()->addDays(mt_rand(1, 3)) : null;
+        PypProgramCalendar::create([
+            'program_id' => $program->id,
+            'service_name' => 'Charla Nutricional Preventiva',
+            'scheduled_date' => '2026-07-15',
+            'location' => 'Salón Multiusos Core',
+            'capacity' => 50,
+            'status' => 'Programado'
+        ]);
 
-                $batch[] = [
-                    'notification_number' => 'CAP-' . $period . '-' . str_pad($counter, 7, '0', STR_PAD_LEFT),
-                    'afiliado_id' => $afId,
-                    'period' => $period,
-                    'capitation_amount' => $amount,
-                    'individualization_type' => $indivTypes[array_rand($indivTypes)],
-                    'status' => $status,
-                    'notified_at' => $notifiedAt->toDateTimeString(),
-                    'confirmed_at' => $confirmedAt?->toDateTimeString(),
-                    'rejected_at' => $rejectedAt?->toDateTimeString(),
-                    'rejection_reason' => ($status === 'IR')
-                        ? $this->weightedRandom(['Datos inconsistentes con TSS' => 1, 'Afiliado inactivo' => 1, 'Período no válido' => 1, 'Duplicado detectado' => 1])
-                        : null,
-                    'created_at' => $notifiedAt->toDateTimeString(),
-                    'updated_at' => now(),
-                ];
+        // 5. SEED PLANES DE SALUD
+        $this->command->info("Seeding Planes de Salud...");
+        $planComplementario = HealthPlan::create([
+            'code' => 'PLAN-COMP',
+            'name' => 'Plan Especial Complementario',
+            'plan_type' => 'Complementario',
+            'description' => 'Plan de cobertura complementario para ejecutivos.',
+            'status' => 'Activo',
+            'effective_from' => '2026-01-01'
+        ]);
 
-                if (count($batch) >= $batchSize) {
-                    DB::transaction(function () use ($batch) { CapitationNotification::insert($batch); });
-                    $batch = [];
-                }
-            }
+        $servicio = ServicioMedico::first();
+        if ($servicio) {
+            HealthPlanCoverage::create([
+                'health_plan_id' => $planComplementario->id,
+                'pdss_service_id' => $servicio->id,
+                'coverage_percent' => 80.00,
+                'copay_percent' => 20.00,
+                'fixed_copay' => 0.00,
+                'limit_amount' => 150000.00,
+                'limit_period' => 'Anual',
+                'waiting_period_days' => 30,
+                'requires_authorization' => true
+            ]);
         }
 
-        if (!empty($batch)) {
-            DB::transaction(function () use ($batch) { CapitationNotification::insert($batch); });
-        }
-    }
+        CoverageDerivationRule::create([
+            'health_plan_id' => $planComplementario->id,
+            'derivation_type' => 'Edad',
+            'condition_json' => ['edad_min' => 60],
+            'result_json' => ['copay_additional' => 5],
+            'priority' => 1,
+            'status' => 'Activo'
+        ]);
 
-    private function createDispersionCuts(): void
-    {
-        $periods = [
-            now()->subMonths(5), now()->subMonths(4), now()->subMonths(3),
-            now()->subMonths(2), now()->subMonth(), now(),
-        ];
-        $statuses = ['Dispersado','Dispersado','Dispersado','Certificado','Generado','En proceso'];
-        $cutTypes = ['Primer Corte','Segundo Corte','Operativo'];
+        CoverageLimit::create([
+            'health_plan_id' => $planComplementario->id,
+            'limit_type' => 'Monto',
+            'amount' => 500000.00,
+            'period' => 'Anual',
+            'status' => 'Activo'
+        ]);
 
-        foreach ($periods as $idx => $periodDate) {
-            $period = $periodDate->format('Ym');
-            $cutNumber = 'DISP-' . $period . '-' . str_pad($idx + 1, 4, '0', STR_PAD_LEFT);
-            $status = $statuses[$idx];
+        // 6. SEED PRESTADORES
+        $this->command->info("Seeding Prestadores Fortalecimiento...");
+        $groupPss = ProviderGroup::create(['name' => 'Grupo Hospiten', 'description' => 'Red Hospiten a nivel nacional.']);
+        $network = ProviderNetwork::create(['name' => 'Red Premium Gold', 'status' => 'Activo']);
+        $network->plans()->attach([$planComplementario->id]);
 
-            $generatedAt = ($status !== 'Programado') ? $periodDate->copy()->addDays(5)->toDateTimeString() : null;
-            $certifiedAt = in_array($status, ['Certificado','Dispersado']) ? $periodDate->copy()->addDays(8)->toDateTimeString() : null;
-            $dispersedAt = ($status === 'Dispersado') ? $periodDate->copy()->addDays(12)->toDateTimeString() : null;
-            $closedAt = ($status === 'Dispersado') ? $periodDate->copy()->addDays(15)->toDateTimeString() : null;
+        $pssFisica = Pss::create([
+            'nombre' => 'DR. ALBERTO CABRERA',
+            'rnc' => '00199281729',
+            'tipo_entidad' => 'Médico Especialista',
+            'telefono' => '809-555-0199',
+            'direccion' => 'Av. Lincoln #444',
+            'estado' => 'Activa',
+            'pss_nature' => 'Física'
+        ]);
 
-            $cut = DispersionCut::create([
-                'cut_number' => $cutNumber,
-                'period' => $period,
-                'cut_type' => $cutTypes[$idx % 3],
-                'status' => $status,
-                'total_affiliates' => 0,
-                'total_holders' => 0,
-                'total_dependents' => 0,
-                'total_capitations' => 0,
-                'total_amount' => 0,
-                'generated_at' => $generatedAt,
-                'certified_at' => $certifiedAt,
-                'dispersed_at' => $dispersedAt,
-                'closed_at' => $closedAt,
-                'created_at' => $periodDate->toDateTimeString(),
-                'updated_at' => now(),
+        $pssClinica = Pss::create([
+            'nombre' => 'CLINICA ABREU',
+            'rnc' => '101009988',
+            'tipo_entidad' => 'Clínica',
+            'telefono' => '809-688-4411',
+            'direccion' => 'Calle Beller #42',
+            'estado' => 'Activa',
+            'pss_nature' => 'Jurídica'
+        ]);
+
+        if ($servicio) {
+            ProviderContractedService::create([
+                'pss_id' => $pssClinica->id,
+                'servicio_medico_id' => $servicio->id,
+                'status' => 'Activo'
             ]);
 
-            $periodNotifs = CapitationNotification::where('period', $period)->get();
-            $detailBatch = [];
-            $totalAmount = 0;
-            $totalHolders = 0;
-            $totalDeps = 0;
-
-            foreach ($periodNotifs as $notif) {
-                $amount = (float) $notif->capitation_amount;
-                $totalAmount += $amount;
-                if ($notif->individualization_type !== 'Capita Temporal') $totalHolders++; else $totalDeps++;
-
-                $detailBatch[] = [
-                    'dispersion_cut_id' => $cut->id,
-                    'capitation_notification_id' => $notif->id,
-                    'afiliado_id' => $notif->afiliado_id,
-                    'amount' => $amount,
-                    'status' => $this->weightedRandom(['DI' => 3, 'IC' => 1, 'PE' => 1]),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-
-                if (count($detailBatch) >= 500) {
-                    DB::transaction(function () use ($detailBatch) { DispersionCutDetail::insert($detailBatch); });
-                    $detailBatch = [];
-                }
-            }
-
-            if (!empty($detailBatch)) {
-                DB::transaction(function () use ($detailBatch) { DispersionCutDetail::insert($detailBatch); });
-            }
-
-            $cut->update([
-                'total_affiliates' => $periodNotifs->count(),
-                'total_holders' => $totalHolders,
-                'total_dependents' => $totalDeps,
-                'total_capitations' => $periodNotifs->count(),
-                'total_amount' => round($totalAmount, 2),
+            ProviderPriceAgreement::create([
+                'pss_id' => $pssClinica->id,
+                'health_plan_id' => $planComplementario->id,
+                'servicio_medico_id' => $servicio->id,
+                'price' => 1200.00,
+                'status' => 'Activo'
             ]);
-
-            $this->command->info("  Corte {$cutNumber}: {$status} - " . number_format($totalAmount, 2) . " DOP ({$periodNotifs->count()} registros)");
-        }
-    }
-
-    private function createNotifications(): void
-    {
-        $batch = [];
-        $batchSize = 1000;
-        $counter = 0;
-
-        $types = [
-            ['type' => 'Lote recibido', 'title' => 'Lote procesado exitosamente'],
-            ['type' => 'Capita notificada', 'title' => 'Notificación de capitación'],
-            ['type' => 'Capita confirmada', 'title' => 'Confirmación de capita'],
-            ['type' => 'Capita rechazada', 'title' => 'Rechazo en proceso de capita'],
-            ['type' => 'Dispersión procesada', 'title' => 'Dispersión ejecutada'],
-            ['type' => 'Corte generado', 'title' => 'Nuevo corte de dispersión'],
-            ['type' => 'Certificación pendiente', 'title' => 'Certificación requiere atención'],
-            ['type' => 'Rechazo de pago', 'title' => 'Pago rechazado por entidad financiera'],
-            ['type' => 'Aviso de afiliación', 'title' => 'Afiliado registrado en plataforma'],
-            ['type' => 'Cambio de estado', 'title' => 'Cambio de estado de afiliación'],
-            ['type' => 'Recordatorio de aporte', 'title' => 'Recordatorio: Aporte pendiente'],
-            ['type' => 'Actualización de datos', 'title' => 'Datos actualizados en padrón'],
-            ['type' => 'Solicitud de documento', 'title' => 'Documento requerido'],
-            ['type' => 'Aprobación de reclamación', 'title' => 'Reclamación aprobada parcialmente'],
-            ['type' => 'Pago procesado', 'title' => 'Pago confirmado por banco'],
-        ];
-
-        $affiliateIds = Afiliado::pluck('id')->toArray();
-
-        foreach ($affiliateIds as $afId) {
-            $numNotifs = mt_rand(1, 4);
-            for ($n = 0; $n < $numNotifs; $n++) {
-                $counter++;
-                $typeInfo = $types[array_rand($types)];
-                $read = (mt_rand(1, 10) <= 6) ? now()->subDays(mt_rand(0, 30))->toDateTimeString() : null;
-                $refTypes = ['batch','capitation','dispersion','claim',null];
-
-                $batch[] = [
-                    'notification_type' => $typeInfo['type'],
-                    'reference_type' => $refTypes[array_rand($refTypes)],
-                    'reference_id' => null,
-                    'title' => $typeInfo['title'],
-                    'message' => "Notificación #{$counter} para el afiliado #{$afId}: {$typeInfo['title']}.",
-                    'read_at' => $read,
-                    'metadata' => json_encode(['affiliate_id' => $afId, 'period' => now()->format('Ym')]),
-                    'created_at' => now()->subDays(mt_rand(0, 60))->toDateTimeString(),
-                    'updated_at' => now(),
-                ];
-
-                if (count($batch) >= $batchSize) {
-                    DB::transaction(function () use ($batch) { UnipagoMockNotification::insert($batch); });
-                    $batch = [];
-                }
-            }
         }
 
-        if (!empty($batch)) {
-            DB::transaction(function () use ($batch) { UnipagoMockNotification::insert($batch); });
-        }
-    }
+        ProviderGeoLocation::create([
+            'pss_id' => $pssClinica->id,
+            'province' => 'Distrito Nacional',
+            'municipality' => 'Santo Domingo de Guzmán',
+            'sector' => 'Piantini',
+            'latitude' => 18.47186,
+            'longitude' => -69.90712,
+            'address_details' => 'Frente al Parque Independencia'
+        ]);
 
-    /**
-     * Helper to select a random key based on weights.
-     */
-    private function weightedRandom(array $weights): mixed
-    {
-        $r = mt_rand(1, array_sum($weights));
-        foreach ($weights as $key => $weight) {
-            $r -= $weight;
-            if ($r <= 0) {
-                return $key;
-            }
-        }
-        return array_key_first($weights);
+        $capContract = CapitatedServiceContract::create([
+            'pss_id' => $pssClinica->id,
+            'contract_number' => 'CAP-CONTR-009',
+            'coverage_population_count' => 1500,
+            'monthly_capitation_rate' => 150.00,
+            'total_monthly_amount' => 225000.00,
+            'start_date' => '2026-01-01',
+            'end_date' => '2026-12-31',
+            'status' => 'Activo'
+        ]);
+
+        CapitatedServicePayment::create([
+            'capitated_contract_id' => $capContract->id,
+            'period' => '202606',
+            'amount_paid' => 225000.00,
+            'paid_at' => '2026-06-30',
+            'status' => 'Pagado'
+        ]);
+
+        // 7. SEED AFILIACIONES GRUPOS
+        $this->command->info("Seeding Afiliaciones Grupos...");
+        $groupAfil = AffiliateGroup::create(['name' => 'Corporación Banco Popular', 'rnc' => '101002384']);
+        $contractAfil = AffiliateContract::create(['code' => 'EMP-P1', 'name' => 'Contrato Popular Premium', 'contract_type' => 'Corporativo']);
+        $businessUnit = BusinessUnit::create(['name' => 'Unidad Zona Metropolitana', 'description' => 'Servicio a Santo Domingo']);
+        
+        $geoCode = GeographicCode::create([
+            'region' => 'Metropolitana',
+            'province' => 'Distrito Nacional',
+            'municipality' => 'Santo Domingo de Guzmán',
+            'sector' => 'Piantini'
+        ]);
+
+        AffiliateTransaction::create([
+            'affiliate_id' => $frederik->id,
+            'affiliate_type' => 'titular',
+            'transaction_type' => 'Traspaso',
+            'concept' => 'Traspaso de Entrada',
+            'payload_before' => json_encode([]),
+            'payload_after' => json_encode($frederik->toArray()),
+            'user_id' => 1
+        ]);
+
+        // 8. SEED CARNETIZACIÓN STOCK & CENTERS
+        $this->command->info("Seeding Carnetización Stock...");
+        $center = PrintingCenter::create(['name' => 'Centro Principal Metropolitana', 'location' => 'Edificio Sede Central']);
+        
+        $supplyPlastico = PrintingSupply::create([
+            'name' => 'Tarjetas Plásticas PVC',
+            'supply_family' => 'plastico',
+            'unit' => 'Unidad',
+            'initial_stock' => 5000,
+            'current_stock' => 4820
+        ]);
+
+        PrintingSupplyMovement::create([
+            'supply_id' => $supplyPlastico->id,
+            'printing_center_id' => $center->id,
+            'movement_type' => 'salida',
+            'quantity' => 1,
+            'reason' => 'Carnet impreso de Juan Perez',
+            'user_id' => 1
+        ]);
+
+        $carnetReq = CarnetRequest::create([
+            'affiliate_id' => $frederik->id,
+            'affiliate_type' => 'titular',
+            'request_type' => 'Renovación',
+            'printing_center_id' => $center->id,
+            'request_date' => '2026-06-29',
+            'status' => 'Impreso',
+            'print_date' => '2026-06-29',
+            'batch_number' => 'BATCH-202606'
+        ]);
+
+        CarnetDelivery::create([
+            'carnet_request_id' => $carnetReq->id,
+            'recipient_name' => 'JUAN PEREZ',
+            'delivery_date' => '2026-06-30',
+            'status' => 'Entregado'
+        ]);
+
+        CarnetTransfer::create([
+            'carnet_request_id' => $carnetReq->id,
+            'origin_location' => 'Sede Central',
+            'destination_location' => 'Oficina Piantini',
+            'sent_date' => '2026-06-29',
+            'status' => 'Completada'
+        ]);
+
+        CarnetAdjustment::create([
+            'supply_id' => $supplyPlastico->id,
+            'printing_center_id' => $center->id,
+            'adjustment_type' => 'merma',
+            'quantity' => -5,
+            'reason' => 'Plásticos dañados en calibración',
+            'user_id' => 1
+        ]);
+
+        // 9. SEED PROMOTORES
+        $this->command->info("Seeding Promotores...");
+        $promoter = Promoter::create([
+            'name' => 'PEDRO JAVIER SANTOS',
+            'promoter_type' => 'persona_fisica',
+            'identification_number' => '00109283742',
+            'status' => 'Activo'
+        ]);
+
+        PromoterContract::create([
+            'promoter_id' => $promoter->id,
+            'contract_number' => 'PROM-CONTR-992',
+            'start_date' => '2026-01-01',
+            'end_date' => '2026-12-31',
+            'commission_percent' => 5.00,
+            'status' => 'Activo'
+        ]);
+
+        $campaign = PromoterCampaign::create([
+            'name' => 'Campaña Verano Premium',
+            'description' => 'Ventas de Planes Complementarios del 1 de Junio al 31 de Agosto.',
+            'start_date' => '2026-06-01',
+            'end_date' => '2026-08-31',
+            'commission_amount' => 500.00,
+            'status' => 'Activa'
+        ]);
+
+        PromoterCommission::create([
+            'promoter_id' => $promoter->id,
+            'campaign_id' => $campaign->id,
+            'affiliate_id' => $frederik->id,
+            'amount' => 500.00,
+            'payout_period' => '202606',
+            'status' => 'Aprobada'
+        ]);
+
+        // 10. SEED BILLING & TICKETS
+        $this->command->info("Seeding Billing & Tickets...");
+        BillingInvoice::create([
+            'invoice_number' => 'FAC-2026-0001',
+            'health_plan_id' => $planComplementario->id,
+            'affiliate_group_id' => $groupAfil->id,
+            'amount' => 450000.00,
+            'ncf' => 'B0100000122',
+            'status' => 'Emitida',
+            'issued_at' => '2026-06-30',
+            'due_date' => '2026-07-30'
+        ]);
+
+        CustomerCase::create([
+            'affiliate_id' => $frederik->id,
+            'case_type' => 'Reclamación Cobertura',
+            'description' => 'Afiliado Juan Perez reporta cobro indebido en farmacia para cobertura.',
+            'status' => 'Abierto',
+            'priority' => 'Media',
+            'sla_hours' => 72
+        ]);
+        
+        $this->command->info("Done Seeding operational data and 80k affiliates!");
     }
 }

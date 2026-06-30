@@ -499,4 +499,290 @@ class ReclamacionController extends Controller
 
         return view('ars.reclamaciones.reportes', compact('stats', 'pssData'));
     }
+
+    /**
+     * Listado de radicaciones con control de aging (antigüedad).
+     */
+    public function radicaciones(Request $request)
+    {
+        $search = $request->get('search');
+        $query = AuthorizationClaim::with(['pss', 'authorization']);
+
+        if ($search) {
+            $query->where('claim_number', 'like', "%{$search}%")
+                  ->orWhereHas('pss', function($q) use ($search) {
+                      $q->where('nombre', 'like', "%{$search}%");
+                  });
+        }
+
+        $radicaciones = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        // Agrupar por antigüedad (aging)
+        $claims = AuthorizationClaim::all();
+        $agingData = [
+            '1_30' => 0,
+            '31_60' => 0,
+            '61_90' => 0,
+            '90_plus' => 0,
+        ];
+
+        foreach ($claims as $c) {
+            $days = now()->diffInDays($c->created_at);
+            if ($days <= 30) $agingData['1_30']++;
+            elseif ($days <= 60) $agingData['31_60']++;
+            elseif ($days <= 90) $agingData['61_90']++;
+            else $agingData['90_plus']++;
+        }
+
+        return view('ars.reclamaciones.radicaciones', compact('radicaciones', 'agingData', 'search'));
+    }
+
+    /**
+     * Formulario de correcciones de radicaciones.
+     */
+    public function correcciones(Request $request)
+    {
+        $radicaciones = AuthorizationClaim::with('pss')->orderBy('created_at', 'desc')->get();
+        return view('ars.reclamaciones.correcciones', compact('radicaciones'));
+    }
+
+    /**
+     * Procesa la corrección de datos en una radicación.
+     */
+    public function corregirRadicacion(Request $request, $id)
+    {
+        $claim = AuthorizationClaim::findOrFail($id);
+        
+        $request->validate([
+            'invoice_number' => 'required|string',
+            'claimed_amount' => 'required|numeric|min:0',
+            'reason' => 'required|string|min:5'
+        ]);
+
+        $before = [
+            'invoice_number' => $claim->invoice_number,
+            'claimed_amount' => $claim->claimed_amount
+        ];
+
+        $claim->update([
+            'invoice_number' => $request->invoice_number,
+            'claimed_amount' => $request->claimed_amount
+        ]);
+
+        // Registrar auditoría en bitácora
+        Bitacora::registrar('Reclamaciones', "Corrección de radicación {$claim->claim_number}. Motivo: {$request->reason}. Anterior: " . json_encode($before));
+
+        return redirect()->route('ars.reclamaciones.correcciones')
+            ->with('success', 'Radicación corregida exitosamente. Los cambios han sido registrados en la bitácora de auditoría.');
+    }
+
+    /**
+     * Bandeja de Auditoría Retrospectiva.
+     */
+    public function auditoriaRetrospectiva(Request $request)
+    {
+        // Reclamaciones pagadas o aprobadas para auditoría retrospectiva
+        $reclamaciones = AuthorizationClaim::whereIn('status', ['Reclamación aprobada', 'Pagada', 'Conciliada'])
+            ->with(['pss', 'authorization'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+            
+        return view('ars.reclamaciones.auditoria_retrospectiva', compact('reclamaciones'));
+    }
+
+    /**
+     * Bandeja de Auditoría de Facturación.
+     */
+    public function auditoriaFacturacion(Request $request)
+    {
+        $reclamaciones = AuthorizationClaim::where('status', 'En auditoría de reclamación')
+            ->with(['pss', 'authorization'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+            
+        return view('ars.reclamaciones.auditoria_facturacion', compact('reclamaciones'));
+    }
+
+    /**
+     * Validaciones del módulo.
+     */
+    public function validaciones(Request $request)
+    {
+        $reclamaciones = AuthorizationClaim::with(['pss', 'authorization'])->orderBy('created_at', 'desc')->take(20)->get();
+        return view('ars.reclamaciones.validaciones', compact('reclamaciones'));
+    }
+
+    /**
+     * Bandeja de NCF para Reclamaciones.
+     */
+    public function ncfIndex(Request $request)
+    {
+        $reclamaciones = AuthorizationClaim::with('pss')->orderBy('created_at', 'desc')->paginate(15);
+        return view('ars.reclamaciones.ncf', compact('reclamaciones'));
+    }
+
+    /**
+     * Corrige el NCF de una reclamación (requiere motivo).
+     */
+    public function corregirNcf(Request $request, $id)
+    {
+        $claim = AuthorizationClaim::findOrFail($id);
+
+        $request->validate([
+            'ncf' => 'required|string|min:9|max:19',
+            'reason' => 'required|string|min:5'
+        ]);
+
+        $before = $claim->ncf;
+        
+        $claim->update([
+            'ncf' => $request->ncf,
+            'ncf_corrected_by' => Auth::id() ?? 1,
+            'ncf_correction_reason' => $request->reason
+        ]);
+
+        Bitacora::registrar('Reclamaciones', "Corrección de NCF en reclamación {$claim->claim_number}. NCF Anterior: {$before}. NCF Nuevo: {$request->ncf}. Motivo: {$request->reason}");
+
+        return redirect()->route('ars.reclamaciones.ncf')
+            ->with('success', 'NCF corregido exitosamente.');
+    }
+
+    /**
+     * Listado de lotes de reclamaciones.
+     */
+    public function lotesIndex(Request $request)
+    {
+        $lotes = \App\Models\PaymentBatch::with('items')->orderBy('created_at', 'desc')->get();
+        
+        // Reclamaciones aprobadas listas para lote
+        $claimsAprobadas = AuthorizationClaim::where('status', 'Cuenta por pagar generada')
+            ->whereNull('batch_id')
+            ->get();
+
+        return view('ars.reclamaciones.lotes', compact('lotes', 'claimsAprobadas'));
+    }
+
+    /**
+     * Generar un nuevo lote agrupando reclamaciones aprobadas.
+     */
+    public function generarLoteClaims(Request $request)
+    {
+        $request->validate([
+            'claim_ids' => 'required|array|min:1',
+            'scheduled_payment_date' => 'required|date'
+        ]);
+
+        DB::transaction(function() use ($request) {
+            $batchNum = 'LOTE-PAY-' . now()->format('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            
+            $batch = \App\Models\PaymentBatch::create([
+                'batch_number' => $batchNum,
+                'status' => 'Borrador',
+                'scheduled_payment_date' => $request->scheduled_payment_date,
+                'created_by' => Auth::id() ?? 1,
+                'total_amount' => 0,
+                'total_items' => 0
+            ]);
+
+            $totalAmount = 0;
+            $totalItems = 0;
+
+            foreach ($request->claim_ids as $claimId) {
+                $claim = AuthorizationClaim::findOrFail($claimId);
+                $claim->update(['batch_id' => $batch->id, 'status' => 'En lote de pago']);
+
+                $payable = AccountPayable::where('claim_id', $claim->id)->first();
+                if ($payable) {
+                    $payable->update(['status' => 'En lote de pago']);
+                    
+                    \App\Models\PaymentBatchItem::create([
+                        'payment_batch_id' => $batch->id,
+                        'account_payable_id' => $payable->id,
+                        'amount' => $payable->net_amount,
+                        'status' => 'En lote de pago'
+                    ]);
+
+                    $totalAmount += $payable->net_amount;
+                    $totalItems++;
+                }
+            }
+
+            $batch->update([
+                'total_amount' => $totalAmount,
+                'total_items' => $totalItems
+            ]);
+
+            Bitacora::registrar('Pagos', "Generado lote de pago {$batchNum} con {$totalItems} reclamaciones por un monto total de DOP {$totalAmount}.");
+        });
+
+        return redirect()->route('ars.reclamaciones.lotes')
+            ->with('success', 'Lote de reclamaciones generado exitosamente.');
+    }
+
+    /**
+     * Ver detalle de un lote de pago.
+     */
+    public function verLoteClaims($id)
+    {
+        $lote = \App\Models\PaymentBatch::with(['items.accountPayable.claim.pss'])->findOrFail($id);
+        return view('ars.reclamaciones.ver_lote', compact('lote'));
+    }
+
+    /**
+     * Corrige el NCF de un lote de reclamación.
+     */
+    public function corregirLoteNcf(Request $request, $id)
+    {
+        $request->validate([
+            'claim_id' => 'required|exists:authorization_claims,id',
+            'ncf' => 'required|string',
+            'reason' => 'required|string'
+        ]);
+
+        $claim = AuthorizationClaim::findOrFail($request->claim_id);
+        $claim->update([
+            'ncf' => $request->ncf,
+            'ncf_corrected_by' => Auth::id() ?? 1,
+            'ncf_correction_reason' => $request->reason
+        ]);
+
+        return redirect()->route('ars.reclamaciones.ver_lote', $id)
+            ->with('success', 'NCF de la reclamación en el lote corregido.');
+    }
+
+    /**
+     * Bandeja unificada de conciliación de glosas.
+     */
+    public function glosasIndex(Request $request)
+    {
+        $glosas = \App\Models\ClaimGlosa::with(['claim.pss', 'audit'])->orderBy('created_at', 'desc')->get();
+        return view('ars.reclamaciones.glosas', compact('glosas'));
+    }
+
+    /**
+     * Bandeja de notificaciones.
+     */
+    public function notificaciones(Request $request)
+    {
+        $notificaciones = \App\Models\UnipagoMockNotification::orderBy('created_at', 'desc')->take(30)->get();
+        return view('ars.reclamaciones.notificaciones', compact('notificaciones'));
+    }
+
+    /**
+     * Plantillas de correos y alertas.
+     */
+    public function plantillas(Request $request)
+    {
+        return view('ars.reclamaciones.plantillas');
+    }
+
+    /**
+     * Reporte de Cuentas por Pagar.
+     */
+    public function cuentasPorPagar(Request $request)
+    {
+        $payables = AccountPayable::with(['claim.pss', 'authorization'])->orderBy('created_at', 'desc')->get();
+        return view('ars.reclamaciones.cuentas_por_pagar', compact('payables'));
+    }
 }
+
