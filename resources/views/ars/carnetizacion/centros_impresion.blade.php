@@ -24,7 +24,7 @@
         <!-- Registrar Centro -->
         <div class="bg-white rounded-3xl border border-slate-100 p-6 shadow-xs space-y-4">
             <h3 class="font-bold text-slate-800 border-b border-slate-50 pb-2">Registrar Oficina de Impresión</h3>
-            <form action="{{ route('ars.carnetizacion.guardar_centro') }}" method="POST" class="space-y-4">
+            <form action="{{ route('ars.carnetizacion.guardar_centro_impresion') }}" method="POST" class="space-y-4">
                 @csrf
                 <div>
                     <label class="block font-bold text-slate-450 mb-1.5 uppercase tracking-wider text-[9px]">Nombre del Centro <span class="text-rose-500">*</span></label>
