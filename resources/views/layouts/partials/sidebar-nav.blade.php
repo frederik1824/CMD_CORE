@@ -399,10 +399,10 @@
         <!-- Módulo SISALRIL -->
         <div class="space-y-0.5">
             <button @click="openMenu = (openMenu === 'sisalril' ? '' : 'sisalril'); localStorage.setItem('sidebar_menu', openMenu)" 
-                    class="w-full group flex items-center justify-between px-4 py-2.5 text-xs font-bold rounded-r-full transition-all duration-200 {{ in_array(Route::currentRouteName(), ['ars.sisalril.esquema31', 'ars.sisalril.esquema33', 'ars.sisalril.esquema34', 'ars.sisalril.reportes', 'ars.sisalril.exportaciones']) ? 'text-blue-600 bg-blue-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50 hover:pl-5' }} focus:outline-none">
+                    class="w-full group flex items-center justify-between px-4 py-2.5 text-xs font-bold rounded-r-full transition-all duration-200 {{ in_array(Route::currentRouteName(), ['sisalril.dashboard', 'sisalril.index', 'sisalril.catalogos', 'sisalril.configuracion', 'sisalril.generar', 'sisalril.simulador', 'sisalril.show', 'sisalril.submission_detalle']) ? 'text-blue-600 bg-blue-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50 hover:pl-5' }} focus:outline-none">
                 <span class="flex items-center">
-                    <span class="material-symbols-outlined text-[18px] mr-3 text-center shrink-0 {{ in_array(Route::currentRouteName(), ['ars.sisalril.esquema31', 'ars.sisalril.esquema33', 'ars.sisalril.esquema34', 'ars.sisalril.reportes', 'ars.sisalril.exportaciones']) ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-700' }}">gavel</span>
-                    <span>SISALRIL</span>
+                    <span class="material-symbols-outlined text-[18px] mr-3 text-center shrink-0 {{ in_array(Route::currentRouteName(), ['sisalril.dashboard', 'sisalril.index', 'sisalril.catalogos', 'sisalril.configuracion', 'sisalril.generar', 'sisalril.simulador', 'sisalril.show', 'sisalril.submission_detalle']) ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-700' }}">gavel</span>
+                    <span>SISALRIL / SIMON</span>
                 </span>
                 <span class="material-symbols-outlined text-[14px] text-slate-400 transition-transform duration-250 mr-2" :class="openMenu === 'sisalril' ? 'rotate-180' : ''">keyboard_arrow_down</span>
             </button>
@@ -410,14 +410,18 @@
             <div x-show="openMenu === 'sisalril'" 
                  x-transition
                  class="ml-6 pl-4 border-l border-slate-100 my-1 space-y-1" x-cloak>
-                <a href="{{ route('ars.sisalril.esquema31') }}" 
-                   class="block px-3.5 py-2 text-[11px] font-bold rounded-r-full hover:bg-slate-50 hover:text-blue-600 transition-all {{ Route::is('ars.sisalril.esquema31') ? 'text-blue-600 font-bold' : 'text-slate-500' }}">Esquema 31 - Compl.</a>
-                <a href="{{ route('ars.sisalril.esquema33') }}" 
-                   class="block px-3.5 py-2 text-[11px] font-bold rounded-r-full hover:bg-slate-50 hover:text-blue-600 transition-all {{ Route::is('ars.sisalril.esquema33') ? 'text-blue-600 font-bold' : 'text-slate-500' }}">Esquema 33 - Tit. Vol.</a>
-                <a href="{{ route('ars.sisalril.esquema34') }}" 
-                   class="block px-3.5 py-2 text-[11px] font-bold rounded-r-full hover:bg-slate-50 hover:text-blue-600 transition-all {{ Route::is('ars.sisalril.esquema34') ? 'text-blue-600 font-bold' : 'text-slate-500' }}">Esquema 34 - Dep. Vol.</a>
-                <a href="{{ route('ars.sisalril.exportaciones') }}" 
-                   class="block px-3.5 py-2 text-[11px] font-bold rounded-r-full hover:bg-slate-50 hover:text-blue-600 transition-all {{ Route::is('ars.sisalril.exportaciones') ? 'text-blue-600 font-bold' : 'text-slate-500' }}">Histórico de Exportaciones</a>
+                <a href="{{ route('sisalril.dashboard') }}" 
+                   class="block px-3.5 py-2 text-[11px] font-bold rounded-r-full hover:bg-slate-50 hover:text-blue-600 transition-all {{ Route::is('sisalril.dashboard') ? 'text-blue-600 font-bold' : 'text-slate-500' }}">Dashboard Regulatorio</a>
+                <a href="{{ route('sisalril.index') }}" 
+                   class="block px-3.5 py-2 text-[11px] font-bold rounded-r-full hover:bg-slate-50 hover:text-blue-600 transition-all {{ Route::is('sisalril.index') ? 'text-blue-600 font-bold' : 'text-slate-500' }}">Esquemas Regulatorios</a>
+                <a href="{{ route('sisalril.catalogos') }}" 
+                   class="block px-3.5 py-2 text-[11px] font-bold rounded-r-full hover:bg-slate-50 hover:text-blue-600 transition-all {{ Route::is('sisalril.catalogos') ? 'text-blue-600 font-bold' : 'text-slate-500' }}">Catálogos SIMON</a>
+                <a href="{{ route('sisalril.configuracion') }}" 
+                   class="block px-3.5 py-2 text-[11px] font-bold rounded-r-full hover:bg-slate-50 hover:text-blue-600 transition-all {{ Route::is('sisalril.configuracion') ? 'text-blue-600 font-bold' : 'text-slate-500' }}">Configuración Entidad</a>
+                <a href="{{ route('sisalril.generar') }}" 
+                   class="block px-3.5 py-2 text-[11px] font-bold rounded-r-full hover:bg-slate-50 hover:text-blue-600 transition-all {{ Route::is('sisalril.generar') ? 'text-blue-600 font-bold' : 'text-slate-500' }}">Generador de Archivos</a>
+                <a href="{{ route('sisalril.simulador') }}" 
+                   class="block px-3.5 py-2 text-[11px] font-bold rounded-r-full hover:bg-slate-50 hover:text-blue-600 transition-all {{ Route::is('sisalril.simulador') || Route::is('sisalril.submission_detalle') ? 'text-blue-600 font-bold' : 'text-slate-500' }}">Portal SIMON</a>
             </div>
         </div>
 
