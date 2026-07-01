@@ -41,18 +41,18 @@ conn.on('ready', async () => {
                 console.log(`Container ${foundId} is in the list of old containers. Waiting for Dockploy deploy...`);
                 await new Promise(r => setTimeout(r, 6000));
             } else {
-                // Verificar si el contenedor tiene la firma de DemoCoreOperationalSeeder
-                console.log(`Checking if container ${foundId} has the DemoCoreOperationalSeeder...`);
-                const checkRes = await executeRemote(`docker exec ${foundId} ls database/seeders/DemoCoreOperationalSeeder.php`);
-                
-                if (checkRes.code === 0) {
-                    containerId = foundId;
-                    console.log(`Found NEW DEFINITIVE container with DemoCoreOperationalSeeder: ${containerId}`);
-                } else {
-                    console.log(`Container ${foundId} is an intermediate version without the seeder. Skipping...`);
-                    oldContainers.push(foundId);
-                    await new Promise(r => setTimeout(r, 6000));
-                }
+                 // Verificar si el contenedor tiene la firma de calcular_comisiones corregida
+                 console.log(`Checking if container ${foundId} has the calcular_comisiones route...`);
+                 const checkRes = await executeRemote(`docker exec ${foundId} grep -q "calcular_comisiones" routes/web.php`);
+                 
+                 if (checkRes.code === 0) {
+                     containerId = foundId;
+                     console.log(`Found NEW DEFINITIVE container with calcular_comisiones fix: ${containerId}`);
+                 } else {
+                     console.log(`Container ${foundId} is an old or intermediate version. Skipping...`);
+                     oldContainers.push(foundId);
+                     await new Promise(r => setTimeout(r, 6000));
+                 }
             }
          } else {
              console.log('No container found yet. Waiting 6 seconds for Dockploy deploy...');
