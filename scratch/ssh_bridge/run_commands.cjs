@@ -41,58 +41,54 @@ conn.on('ready', async () => {
                 console.log(`Container ${foundId} is in the list of old containers. Waiting for Dockploy deploy...`);
                 await new Promise(r => setTimeout(r, 6000));
             } else {
-                // Verificar si el contenedor tiene la optimización de pluck en ReimbursementDemoSeeder
-                console.log(`Checking if container ${foundId} has the ReimbursementDemoSeeder pluck fix...`);
-                const checkRes = await executeRemote(`docker exec ${foundId} grep -q "pluck('id')" database/seeders/ReimbursementDemoSeeder.php`);
+                // Verificar si el contenedor tiene la firma de DemoCoreOperationalSeeder
+                console.log(`Checking if container ${foundId} has the DemoCoreOperationalSeeder...`);
+                const checkRes = await executeRemote(`docker exec ${foundId} ls database/seeders/DemoCoreOperationalSeeder.php`);
                 
                 if (checkRes.code === 0) {
                     containerId = foundId;
-                    console.log(`Found NEW DEFINITIVE container with ReimbursementDemoSeeder pluck fix: ${containerId}`);
+                    console.log(`Found NEW DEFINITIVE container with DemoCoreOperationalSeeder: ${containerId}`);
                 } else {
-                    console.log(`Container ${foundId} is an intermediate version. Skipping and waiting for next deploy...`);
+                    console.log(`Container ${foundId} is an intermediate version without the seeder. Skipping...`);
                     oldContainers.push(foundId);
                     await new Promise(r => setTimeout(r, 6000));
                 }
             }
-        } else {
-            console.log('No container found yet. Waiting 6 seconds for Dockploy deploy...');
-            await new Promise(r => setTimeout(r, 6000));
-        }
-    }
-    
-    if (!containerId) {
-        console.error('Error: Could not find definitive active container after 900 seconds.');
-        conn.end();
-        process.exit(1);
-    }
-    
-    // Ejecutar la secuencia de base de datos en el contenedor definitivo final
-    const commands = [
-        `docker exec ${containerId} rm -f /app/database/database.sqlite`,
-        `docker exec ${containerId} touch /app/database/database.sqlite`,
-        `docker exec ${containerId} chmod 777 /app/database/database.sqlite`,
-        `docker exec ${containerId} php artisan migrate --force`,
-        `docker exec ${containerId} php artisan db:seed --force`,
-        `docker exec ${containerId} php artisan db:seed --class=CargaDemoCompletaSeeder --force`,
-        `docker exec ${containerId} chmod -R 777 storage database`
-    ];
-    
-    for (const cmd of commands) {
-        console.log(`\nExecuting: ${cmd}`);
-        const res = await executeRemote(cmd);
-        console.log(`Exit code: ${res.code}`);
-        if (res.stdout) process.stdout.write(res.stdout);
-        if (res.stderr) process.stderr.write(res.stderr);
-        
-        if (res.code !== 0) {
-            console.error(`Command failed. Aborting.`);
-            conn.end();
-            process.exit(res.code);
-        }
-    }
-    
-    console.log('\nAll database operations executed successfully on the definitive container with all new modules deployed!');
-    conn.end();
+         } else {
+             console.log('No container found yet. Waiting 6 seconds for Dockploy deploy...');
+             await new Promise(r => setTimeout(r, 6000));
+         }
+     }
+     
+     if (!containerId) {
+         console.error('Error: Could not find definitive active container after 900 seconds.');
+         conn.end();
+         process.exit(1);
+     }
+     
+     // Ejecutar la secuencia de base de datos en el contenedor definitivo final
+     const commands = [
+         `docker exec ${containerId} php artisan migrate --force`,
+         `docker exec ${containerId} php artisan db:seed --class=DemoCoreOperationalSeeder --force`,
+         `docker exec ${containerId} chmod -R 777 storage database`
+     ];
+     
+     for (const cmd of commands) {
+         console.log(`\nExecuting: ${cmd}`);
+         const res = await executeRemote(cmd);
+         console.log(`Exit code: ${res.code}`);
+         if (res.stdout) process.stdout.write(res.stdout);
+         if (res.stderr) process.stderr.write(res.stderr);
+         
+         if (res.code !== 0) {
+             console.error(`Command failed. Aborting.`);
+             conn.end();
+             process.exit(res.code);
+         }
+     }
+     
+     console.log('\nAll database operations executed successfully on the definitive container with all new modules deployed!');
+     conn.end();
     process.exit(0);
 }).on('error', (err) => {
     console.error('SSH Connection Error:', err);
