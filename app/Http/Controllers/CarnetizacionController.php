@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 class CarnetizacionController extends Controller
 {
     public function solicitudes()
+    {
         $solicitudes = CarnetRequest::with("printingCenter")->orderBy("request_date", "desc")->get();
         $afiliados = Afiliado::where("estado_afiliacion", "OK")->orderBy("nombres")->limit(15)->get();
         $centros = PrintingCenter::all();
