@@ -23,7 +23,7 @@ conn.on('ready', async () => {
     console.log('Connected to VPS.');
     
     // Lista de contenedores viejos
-    const oldContainers = ['5635b507c9d6', 'b55c389efd47', 'f4eb4652a79f'];
+    const oldContainers = ['5635b507c9d6', 'b55c389efd47', 'f4eb4652a79f', 'dc81bbf7b9a1'];
     let containerId = null;
     let attempts = 0;
     
@@ -41,15 +41,15 @@ conn.on('ready', async () => {
                 console.log(`Container ${foundId} is in the list of old containers. Waiting for Dockploy deploy...`);
                 await new Promise(r => setTimeout(r, 6000));
             } else {
-                // Verificar si el contenedor tiene el archivo de migración de SISALRIL
-                console.log(`Checking if container ${foundId} has the regulatory migration...`);
-                const checkRes = await executeRemote(`docker exec ${foundId} ls database/migrations/2026_07_01_000001_create_regulatory_sisalril_tables.php`);
+                // Verificar si el contenedor tiene los enlaces nuevos de SISALRIL/SIMON en el menú lateral
+                console.log(`Checking if container ${foundId} has the new SISALRIL / SIMON menu links...`);
+                const checkRes = await executeRemote(`docker exec ${foundId} grep -q "SISALRIL / SIMON" resources/views/layouts/partials/sidebar-nav.blade.php`);
                 
                 if (checkRes.code === 0) {
                     containerId = foundId;
-                    console.log(`Found NEW DEFINITIVE container with regulatory migration: ${containerId}`);
+                    console.log(`Found NEW DEFINITIVE container with sidebar-nav update: ${containerId}`);
                 } else {
-                    console.log(`Container ${foundId} does not have the migration yet. Skipping...`);
+                    console.log(`Container ${foundId} does not have the menu links update yet. Skipping...`);
                     oldContainers.push(foundId);
                     await new Promise(r => setTimeout(r, 6000));
                 }
