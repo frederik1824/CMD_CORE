@@ -498,3 +498,19 @@ Route::middleware(['auth'])->prefix('aula-virtual')->name('classroom.')->group(f
     Route::post('/cursos/{course_id}/evaluacion/procesar', [VirtualClassroomController::class, 'procesarEvaluacion'])->name('evaluacion.procesar');
     Route::get('/certificados', [VirtualClassroomController::class, 'certificados'])->name('certificados');
 });
+
+// 6. Módulo SISALRIL / SIMON Regulatorio
+Route::middleware(['auth'])->prefix('core/sisalril')->name('sisalril.')->group(function () {
+    Route::get('/esquemas/dashboard', [\App\Http\Controllers\RegulatorySchemaController::class, 'dashboard'])->name('dashboard');
+    Route::get('/esquemas', [\App\Http\Controllers\RegulatorySchemaController::class, 'index'])->name('index');
+    Route::get('/esquemas/catalogos', [\App\Http\Controllers\RegulatorySchemaController::class, 'catalogos'])->name('catalogos');
+    Route::get('/esquemas/configuracion-entidad', [\App\Http\Controllers\RegulatorySchemaController::class, 'configuracion'])->name('configuracion');
+    Route::post('/esquemas/configuracion-entidad', [\App\Http\Controllers\RegulatorySchemaController::class, 'guardarConfiguracion'])->name('guardar_configuracion');
+    Route::get('/esquemas/generar', [\App\Http\Controllers\RegulatoryGeneratorController::class, 'generarIndex'])->name('generar');
+    Route::post('/esquemas/generar/procesar', [\App\Http\Controllers\RegulatoryGeneratorController::class, 'generarProcesar'])->name('generar_procesar');
+    Route::post('/esquemas/generar/run/{runId}/enviar-simon', [\App\Http\Controllers\RegulatoryGeneratorController::class, 'enviarSimon'])->name('enviar_simon');
+    Route::get('/simon-simulador', [\App\Http\Controllers\RegulatoryGeneratorController::class, 'simulador'])->name('simulador');
+    Route::get('/simon-simulador/submission/{id}', [\App\Http\Controllers\RegulatoryGeneratorController::class, 'submissionDetalle'])->name('submission_detalle');
+    Route::post('/simon-simulador/submission/{id}/action', [\App\Http\Controllers\RegulatoryGeneratorController::class, 'submissionAction'])->name('submission_action');
+    Route::get('/esquemas/{code}', [\App\Http\Controllers\RegulatorySchemaController::class, 'show'])->name('show');
+});
