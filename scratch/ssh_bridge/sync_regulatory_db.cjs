@@ -23,7 +23,7 @@ conn.on('ready', async () => {
     console.log('Connected to VPS.');
     
     // Lista de contenedores viejos
-    const oldContainers = ['5635b507c9d6', 'b55c389efd47', 'f4eb4652a79f', 'dc81bbf7b9a1', '78e819912235'];
+    const oldContainers = ['5635b507c9d6', 'b55c389efd47', 'f4eb4652a79f', 'dc81bbf7b9a1', '78e819912235', '1518c64763d6'];
     let containerId = null;
     let attempts = 0;
     
