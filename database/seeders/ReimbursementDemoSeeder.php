@@ -37,12 +37,12 @@ class ReimbursementDemoSeeder extends Seeder
         }
 
         // 2. Obtener Afiliados y PSS para relacionar
-        $afiliados = Afiliado::where('estado_afiliacion', 'OK')->get();
+        $afiliadoIds = Afiliado::where('estado_afiliacion', 'OK')->pluck('id');
         $pssList = Pss::where('estado', 'Activa')->get();
         $userArs = User::where('role', 'Auditor Médico')->first() ?? User::first();
         $userId = $userArs ? $userArs->id : 1;
 
-        if ($afiliados->isEmpty() || $pssList->isEmpty()) {
+        if ($afiliadoIds->isEmpty() || $pssList->isEmpty()) {
             $this->command->error('No hay afiliados o PSS activos para asociar con reembolsos.');
             return;
         }
@@ -86,7 +86,7 @@ class ReimbursementDemoSeeder extends Seeder
 
         for ($i = 0; $i < $totalCases; $i++) {
             $status = $estados[$i % count($estados)];
-            $afiliado = $afiliados->random();
+            $afiliadoId = $afiliadoIds->random();
             $pss = $pssList->random();
 
             $requestType = rand(0, 1) === 0 ? 'cobro_indebido' : 'negacion_cobertura';
@@ -143,7 +143,7 @@ class ReimbursementDemoSeeder extends Seeder
             // Crear el caso
             $case = ReimbursementCase::create([
                 'case_number' => $caseNumber,
-                'afiliado_id' => $afiliado->id,
+                'afiliado_id' => $afiliadoId,
                 'origin' => $origenes[$i % count($origenes)],
                 'request_channel' => $canales[$i % count($canales)],
                 'request_type' => $requestType,
