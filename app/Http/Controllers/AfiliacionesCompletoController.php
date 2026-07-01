@@ -16,10 +16,80 @@ use Illuminate\Support\Facades\Auth;
 
 class AfiliacionesCompletoController extends Controller
 {
-    public function mantenimiento()
+    public function mantenimiento(Request $request)
     {
-        $afiliados = Afiliado::orderBy("nombres")->paginate(15);
-        return view("ars.afiliaciones.mantenimiento", compact("afiliados"));
+        $search = $request->get('search');
+        $tipo = $request->get('tipo', 'titular'); // titular / dependiente
+        $estado = $request->get('estado');
+        $regimen = $request->get('regimen');
+        $provincia = $request->get('provincia');
+
+        if ($tipo === 'dependiente') {
+            $query = Dependiente::with('titular');
+            if ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('nombres', 'like', "%{$search}%")
+                      ->orWhere('apellidos', 'like', "%{$search}%")
+                      ->orWhere('cedula', 'like', "%{$search}%")
+                      ->orWhere('nss', 'like', "%{$search}%");
+                });
+            }
+            if ($estado) $query->where('estado_afiliacion', $estado);
+            // Dependiente no tiene columna provincia ni régimen directo, se puede derivar o filtrar por nacionalidad
+            $afiliados = $query->paginate(15)->withQueryString();
+        } else {
+            $query = Afiliado::query();
+            if ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('nombres', 'like', "%{$search}%")
+                      ->orWhere('primer_apellido', 'like', "%{$search}%")
+                      ->orWhere('segundo_apellido', 'like', "%{$search}%")
+                      ->orWhere('cedula', 'like', "%{$search}%")
+                      ->orWhere('nss', 'like', "%{$search}%");
+                });
+            }
+            if ($estado) $query->where('estado_afiliacion', $estado);
+            if ($regimen) $query->where('regimen_actual', $regimen);
+            if ($provincia) $query->where('provincia', $provincia);
+            
+            $afiliados = $query->paginate(15)->withQueryString();
+        }
+
+        $provincias = Afiliado::select('provincia')->distinct()->whereNotNull('provincia')->pluck('provincia');
+        
+        return view("ars.afiliaciones.mantenimiento", compact(
+            "afiliados", "search", "tipo", "estado", "regimen", "provincia", "provincias"
+        ));
+    }
+
+    public function detalleJson($id, Request $request)
+    {
+        $tipo = $request->get('tipo', 'titular');
+        if ($tipo === 'dependiente') {
+            $afiliado = Dependiente::with(['titular'])->findOrFail($id);
+            return response()->json([
+                'tipo' => 'dependiente',
+                'afiliado' => $afiliado,
+                'nombre_completo' => $afiliado->nombres . ' ' . $afiliado->apellidos,
+                'edad' => $afiliado->fecha_nacimiento ? \Carbon\Carbon::parse($afiliado->fecha_nacimiento)->age : 0,
+                'nucleo' => [$afiliado->titular],
+                'novedades' => \App\Models\Novedad::where('afiliado_type', 'dependiente')->where('afiliado_id', $id)->with('tipoNovedad')->get(),
+                'transacciones' => \App\Models\AffiliateTransaction::where('affiliate_type', 'dependiente')->where('affiliate_id', $id)->get(),
+                'carnets' => \App\Models\CarnetRequest::where('affiliate_type', 'dependiente')->where('affiliate_id', $id)->get()
+            ]);
+        } else {
+            $afiliado = Afiliado::with(['tipoIdentificacion', 'dependientes'])->findOrFail($id);
+            return response()->json([
+                'tipo' => 'titular',
+                'afiliado' => $afiliado,
+                'nombre_completo' => $afiliado->nombre_completo,
+                'edad' => $afiliado->edad,
+                'nucleo' => $afiliado->dependientes,
+                'novedades' => \App\Models\Novedad::where('afiliado_type', 'titular')->where('afiliado_id', $id)->with('tipoNovedad')->get(),
+                'transacciones' => \App\Models\AffiliateTransaction::where('affiliate_type', 'titular')->where('affiliate_id', $id)->get(),
+                'carnets' => \App\Models\CarnetRequest::where('affiliate_type', 'titular')->where('affiliate_id', $id)->get()
+            ]);
+        }
     }
 
     public function tiposContratos()
@@ -56,7 +126,7 @@ class AfiliacionesCompletoController extends Controller
     public function traspasos()
     {
         $traspasos = AffiliateTransaction::where("transaction_type", "traspaso")->get();
-        $afiliados = Afiliado::where("estado_afiliacion", "OK")->get();
+        $afiliados = Afiliado::where("estado_afiliacion", "OK")->orderBy("nombres")->limit(15)->get();
         return view("ars.afiliaciones.traspasos", compact("traspasos", "afiliados"));
     }
 

@@ -663,4 +663,166 @@ class AutorizacionController extends Controller
         Bitacora::registrar('Administracion', "Cambiado estado de la regla {$regla->codigo} a {$nuevoEstado}.");
         return redirect()->route('ars.autorizaciones.reglas')->with('success', "Regla {$regla->codigo} cambiada a {$nuevoEstado}.");
     }
+
+    public function reglasMotorIndex()
+    {
+        $reglas = \App\Models\AuthorizationEngineRule::orderBy('priority')->get();
+        $planes = \App\Models\HealthPlan::all();
+        $gruposPdss = \App\Models\PdssGroup::orderBy('code')->get();
+        $subgruposPdss = \App\Models\PdssSubgroup::orderBy('code')->get();
+        $pssList = Pss::where('estado', 'Activa')->orderBy('nombre')->get();
+        $afiliados = Afiliado::where('estado_afiliacion', 'OK')->orderBy('nombres')->limit(15)->get();
+        $servicios = PdssService::orderBy('simon_code')->limit(15)->get();
+
+        return view('ars.autorizaciones.reglas_motor', compact(
+            'reglas', 'planes', 'gruposPdss', 'subgruposPdss', 'pssList', 'afiliados', 'servicios'
+        ));
+    }
+
+    public function guardarReglaMotor(Request $request)
+    {
+        $request->validate([
+            'rule_code' => 'required|string|unique:authorization_engine_rules,rule_code',
+            'name' => 'required|string',
+            'process' => 'required|string',
+            'severity' => 'required|string',
+            'priority' => 'required|integer',
+        ]);
+
+        $condition = [
+            'field' => $request->condition_field,
+            'operator' => $request->condition_operator,
+            'value' => $request->condition_value
+        ];
+
+        $action = [
+            'type' => $request->action_type,
+            'params' => [
+                'severity' => $request->severity,
+                'message' => $request->action_message
+            ]
+        ];
+
+        \App\Models\AuthorizationEngineRule::create([
+            'rule_code' => $request->rule_code,
+            'name' => $request->name,
+            'description' => $request->description,
+            'process' => $request->process,
+            'severity' => $request->severity,
+            'priority' => $request->priority,
+            'origin' => $request->origin ?? 'Core ARS',
+            'condition_json' => $condition,
+            'action_json' => $action,
+            'status' => 'Activa',
+            'created_by' => Auth::id() ?? 1
+        ]);
+
+        Bitacora::registrar('Reglas Motor', "Nueva regla {$request->rule_code} creada.");
+
+        return redirect()->route('ars.autorizaciones.reglas_motor')->with('success', "Regla {$request->rule_code} creada con éxito.");
+    }
+
+    public function toggleReglaMotor($id)
+    {
+        $regla = \App\Models\AuthorizationEngineRule::findOrFail($id);
+        $nuevoEstado = $regla->status === 'Activa' ? 'Inactiva' : 'Activa';
+        $regla->update(['status' => $nuevoEstado]);
+        
+        Bitacora::registrar('Reglas Motor', "Cambiado estado de la regla {$regla->rule_code} a {$nuevoEstado}.");
+        
+        return redirect()->route('ars.autorizaciones.reglas_motor')->with('success', "Regla {$regla->rule_code} cambiada a {$nuevoEstado}.");
+    }
+
+    public function eliminarReglaMotor($id)
+    {
+        $regla = \App\Models\AuthorizationEngineRule::findOrFail($id);
+        $code = $regla->rule_code;
+        $regla->delete();
+
+        Bitacora::registrar('Reglas Motor', "Eliminada la regla {$code}.");
+
+        return redirect()->route('ars.autorizaciones.reglas_motor')->with('success', "Regla {$code} eliminada con éxito.");
+    }
+
+    public function testReglaMotor(Request $request, $id)
+    {
+        $regla = \App\Models\AuthorizationEngineRule::findOrFail($id);
+        
+        $afiliadoId = $request->get('afiliado_id');
+        $pssId = $request->get('pss_id');
+        $servicioId = $request->get('pdss_service_id');
+        $monto = floatval($request->get('monto', 0));
+
+        $afiliado = Afiliado::find($afiliadoId);
+        $pss = Pss::find($pssId);
+        $servicio = PdssService::find($servicioId);
+
+        // Evaluar la regla contra la condición
+        $condition = $regla->condition_json;
+        $field = $condition['field'] ?? '';
+        $operator = $condition['operator'] ?? '';
+        $value = $condition['value'] ?? '';
+
+        $matchValue = null;
+        if ($field === 'afiliado_estado') {
+            $matchValue = $afiliado ? $afiliado->estado_afiliacion : 'INACTIVO';
+        } elseif ($field === 'monto_solicitado') {
+            $matchValue = $monto;
+        } elseif ($field === 'servicio_alto_costo') {
+            $matchValue = $servicio ? (bool)$servicio->is_high_cost : false;
+        } elseif ($field === 'tipo_pss') {
+            $matchValue = $pss ? $pss->tipo_entidad : '';
+        }
+
+        $isMatch = false;
+        if ($operator === '==') {
+            $isMatch = ($matchValue == $value);
+        } elseif ($operator === '!=') {
+            $isMatch = ($matchValue != $value);
+        } elseif ($operator === '>') {
+            $isMatch = ($matchValue > floatval($value));
+        } elseif ($operator === '<') {
+            $isMatch = ($matchValue < floatval($value));
+        } elseif ($operator === 'contains') {
+            $isMatch = str_contains(strtolower($matchValue), strtolower($value));
+        }
+
+        $veredicto = 'Aprobada';
+        $observacion = 'Regla aprobada (Condición no aplica).';
+        
+        if ($isMatch) {
+            $veredicto = match($regla->severity) {
+                'blocking' => 'Rechazada',
+                'audit_required' => 'Auditoría',
+                'warning' => 'Advertencia',
+                default => 'Aprobada'
+            };
+            $observacion = $regla->action_json['params']['message'] ?? 'Acción ejecutada por severidad.';
+        }
+
+        // Registrar prueba
+        \App\Models\AuthorizationEngineRuleTest::create([
+            'rule_id' => $regla->id,
+            'test_payload' => [
+                'afiliado' => $afiliado?->nombre_completo,
+                'pss' => $pss?->nombre,
+                'servicio' => $servicio?->coverage_description,
+                'monto' => $monto
+            ],
+            'result_payload' => [
+                'is_match' => $isMatch,
+                'veredicto' => $veredicto,
+                'observacion' => $observacion
+            ],
+            'executed_by' => Auth::id() ?? 1,
+            'executed_at' => now()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'is_match' => $isMatch,
+            'veredicto' => $veredicto,
+            'observacion' => $observacion
+        ]);
+    }
 }

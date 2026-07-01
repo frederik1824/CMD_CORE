@@ -41,6 +41,7 @@ Route::middleware(['auth'])->prefix('core')->name('ars.')->group(function () {
 
     // Afiliados (Titulares & Dependientes)
     Route::get('/afiliados/titulares', [AfiliadoController::class, 'titularesIndex'])->name('titulares.index');
+    Route::get('/afiliados/buscar-ajax', [AfiliadoController::class, 'buscarAfiliadoAjax'])->name('afiliados.buscar_ajax');
     Route::get('/afiliados/titulares/crear', [AfiliadoController::class, 'titularesCreate'])->name('titulares.create');
     Route::post('/afiliados/titulares', [AfiliadoController::class, 'titularesStore'])->name('titulares.store');
     Route::get('/afiliados/titulares/{id}', [AfiliadoController::class, 'titularesShow'])->name('titulares.show');
@@ -101,6 +102,11 @@ Route::middleware(['auth'])->prefix('core')->name('ars.')->group(function () {
     Route::get('/autorizaciones/reporte', [AutorizacionController::class, 'reporte'])->name('autorizaciones.reporte');
     Route::get('/autorizaciones/reglas', [AutorizacionController::class, 'reglasIndex'])->name('autorizaciones.reglas');
     Route::post('/autorizaciones/reglas/{id}/toggle', [AutorizacionController::class, 'reglasToggle'])->name('autorizaciones.reglas.toggle');
+    Route::get('/autorizaciones/reglas-motor', [AutorizacionController::class, 'reglasMotorIndex'])->name('autorizaciones.reglas_motor');
+    Route::post('/autorizaciones/reglas-motor', [AutorizacionController::class, 'guardarReglaMotor'])->name('autorizaciones.guardar_regla_motor');
+    Route::post('/autorizaciones/reglas-motor/{id}/toggle', [AutorizacionController::class, 'toggleReglaMotor'])->name('autorizaciones.toggle_regla_motor');
+    Route::post('/autorizaciones/reglas-motor/{id}/test', [AutorizacionController::class, 'testReglaMotor'])->name('autorizaciones.test_regla_motor');
+    Route::delete('/autorizaciones/reglas-motor/{id}', [AutorizacionController::class, 'eliminarReglaMotor'])->name('autorizaciones.eliminar_regla_motor');
     Route::get('/autorizaciones/pendientes', [AutorizacionController::class, 'pendientes'])->name('autorizaciones.pendientes');
     Route::get('/autorizaciones/aprobadas', [AutorizacionController::class, 'aprobadas'])->name('autorizaciones.aprobadas');
     Route::get('/autorizaciones/rechazadas', [AutorizacionController::class, 'rechazadas'])->name('autorizaciones.rechazadas');
@@ -254,6 +260,7 @@ Route::middleware(['auth'])->prefix('core')->name('ars.')->group(function () {
 
     // Afiliaciones (Completo)
     Route::get('/afiliaciones/mantenimiento', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'mantenimiento'])->name('afiliaciones.mantenimiento');
+    Route::get('/afiliaciones/mantenimiento/{id}/detalle-json', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'detalleJson'])->name('afiliaciones.mantenimiento.detalle');
     Route::get('/afiliaciones/tipos-contratos', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'tiposContratos'])->name('afiliaciones.tipos_contratos');
     Route::post('/afiliaciones/tipos-contratos', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'guardarTipoContrato'])->name('afiliaciones.guardar_tipo_contrato');
     Route::get('/afiliaciones/titulares', [\App\Http\Controllers\AfiliacionesCompletoController::class, 'solicitudesTitularesIndex'])->name('afiliaciones.titulares');

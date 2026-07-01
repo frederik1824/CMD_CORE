@@ -1,55 +1,56 @@
 @extends('layouts.ars')
 
-@section('title', 'Log de Transacciones')
+@section('title', 'Historial de Transacciones')
 
 @section('content')
-<div class="space-y-6 font-sans animate-fade-in text-xs">
-    
-    <!-- Encabezado de la página -->
+<div class="space-y-6 font-sans text-xs animate-fade-in">
+    <!-- Encabezado -->
     <div class="flex flex-col md:flex-row md:items-center justify-between pb-5 border-b border-slate-100 gap-4">
         <div>
-            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Log de Transacciones</h2>
-            <p class="text-xs text-slate-500 font-medium">Historial de transacciones de afiliados.</p>
-        </div>
-        <div class="flex items-center space-x-2">
-            <span class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1.5 text-[10px] font-bold text-blue-700 border border-blue-200">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-600 mr-2 animate-pulse"></span>
-                Ecosistema ARS
-            </span>
+            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Historial de Transacciones de Afiliados</h2>
+            <p class="text-xs text-slate-500 font-medium">Registro de auditoría transaccional de afiliaciones, egresos, traspasos y cambios de estatus.</p>
         </div>
     </div>
 
-    <!-- Alertas Flash -->
-    @if(session('success'))
-        <div class="bg-emerald-50 border border-emerald-250 text-emerald-800 p-4 rounded-3xl flex items-center space-x-3">
-            <span class="material-symbols-outlined text-lg">check_circle</span>
-            <span class="font-semibold">{ session('success') }</span>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="bg-rose-50 border border-rose-250 text-rose-800 p-4 rounded-3xl flex items-center space-x-3">
-            <span class="material-symbols-outlined text-lg">error</span>
-            <span class="font-semibold">{ session('error') }</span>
-        </div>
-    @endif
-
-    
-    <div class="bg-white rounded-3xl border border-slate-100 p-6 shadow-xs space-y-4 animate-fade-in">
-        <div class="flex items-center justify-between border-b border-slate-50 pb-2">
-            <h3 class="font-bold text-slate-800">Consola de Demostración y Control Operativo</h3>
-            <span class="text-[10px] font-mono text-slate-400">Core ARS Active View</span>
-        </div>
-        
-        <div class="p-10 text-center text-slate-450 border border-dashed border-slate-200 rounded-3xl space-y-3 bg-slate-50/20">
-            <span class="material-symbols-outlined text-4xl text-[#041e49]">space_dashboard</span>
-            <h4 class="font-bold text-slate-800 text-sm">Visualización del Módulo Core ARS</h4>
-            <p class="text-xs text-slate-500 max-w-md mx-auto">Este submódulo contiene la interfaz del ecosistema completo. Todas las operaciones y transacciones están conectadas directamente a la base de datos persistente SQLite de la ARS.</p>
-            <div class="pt-2">
-                <button onclick="alert('Sección operativa cargada correctamente. Las bitácoras del sistema registran todos sus movimientos.')" class="bg-[#041e49] hover:bg-slate-850 text-white rounded-full px-5 py-2 font-bold shadow-xs transition">Ejecutar Acción Demo</button>
-            </div>
+    <!-- Listado de Transacciones -->
+    <div class="bg-white rounded-3xl border border-slate-100 p-6 shadow-xs space-y-4">
+        <h3 class="font-bold text-slate-800 border-b border-slate-50 pb-2">Auditoría Transaccional</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-100">
+                <thead class="bg-slate-50 font-bold text-slate-400">
+                    <tr>
+                        <th class="px-4 py-3 text-left">Fecha / Hora</th>
+                        <th class="px-4 py-3 text-left">Afiliado</th>
+                        <th class="px-4 py-3 text-left">Tipo Acción</th>
+                        <th class="px-4 py-3 text-left">Concepto / Motivo</th>
+                        <th class="px-4 py-3 text-left">Responsable</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white font-medium">
+                    @forelse($transacciones as $t)
+                        <tr class="hover:bg-slate-50/50 transition">
+                            <td class="px-4 py-3 font-mono text-slate-500 whitespace-nowrap">{{ $t->created_at->format('d/m/Y H:i:s') }}</td>
+                            <td class="px-4 py-3">
+                                <span class="font-bold text-slate-850 block">{{ $t->affiliate?->nombre_completo ?? 'N/A' }}</span>
+                                <span class="text-[10px] text-slate-450 font-mono">Céd: {{ $t->affiliate?->cedula ?? 'N/A' }}</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-bold 
+                                    {{ $t->transaction_type === 'traspaso' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-250' }}">
+                                    {{ ucfirst($t->transaction_type) }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-slate-600 leading-relaxed">{{ $t->concept }}</td>
+                            <td class="px-4 py-3 text-slate-500 font-mono">{{ $t->user?->name ?? 'Sistema' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-8 text-center text-slate-400 font-semibold">No se registran transacciones operativas en el log de afiliaciones.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
-
-
 </div>
 @endsection

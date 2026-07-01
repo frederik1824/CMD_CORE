@@ -23,13 +23,13 @@ conn.on('ready', async () => {
     console.log('Client :: ready. Connected to VPS.');
     
     // Lista de contenedores antiguos
-    const oldContainers = ['e387ea95b741', '3ec23e477a7b', 'd86bf2b6c306', '705775c3b860', '0c7b1ee7418d', 'acd46d1b1572', '2feb35fa9f91', '0954dc03a8d6', 'ce975716f459', '589351a403e2', '90de14d56ac4'];
+    const oldContainers = ['126871f2b121', 'f9fbcbe87d72', 'dd46f5884dc6', '3d164e2769ec', 'e387ea95b741', '3ec23e477a7b', 'd86bf2b6c306', '705775c3b860', '0c7b1ee7418d', 'acd46d1b1572', '2feb35fa9f91', '0954dc03a8d6', 'ce975716f459', '589351a403e2', '90de14d56ac4'];
     let containerId = null;
     let attempts = 0;
     
-    while (!containerId && attempts < 90) {
+    while (!containerId && attempts < 150) {
         attempts++;
-        console.log(`Searching for the LATEST active Docker container (Attempt ${attempts}/90)...`);
+        console.log(`Searching for the LATEST active Docker container (Attempt ${attempts}/150)...`);
         
         const res = await executeRemote("docker ps --format '{{.ID}}\t{{.Image}}\t{{.CreatedAt}}' | grep cmdcore-cmdcore");
         if (res.code === 0 && res.stdout.trim()) {
@@ -41,13 +41,13 @@ conn.on('ready', async () => {
                 console.log(`Container ${foundId} is in the list of old containers. Waiting for Dockploy deploy...`);
                 await new Promise(r => setTimeout(r, 6000));
             } else {
-                // Verificar si el contenedor tiene el fix definitivo de key en PdssDemoCatalogSeeder
-                console.log(`Checking if container ${foundId} has the high_cost key fix...`);
-                const checkRes = await executeRemote(`docker exec ${foundId} grep -q "s\\['high_cost'\\]" database/seeders/PdssDemoCatalogSeeder.php`);
+                // Verificar si el contenedor tiene la optimización de pluck en ReimbursementDemoSeeder
+                console.log(`Checking if container ${foundId} has the ReimbursementDemoSeeder pluck fix...`);
+                const checkRes = await executeRemote(`docker exec ${foundId} grep -q "pluck('id')" database/seeders/ReimbursementDemoSeeder.php`);
                 
                 if (checkRes.code === 0) {
                     containerId = foundId;
-                    console.log(`Found NEW DEFINITIVE container with key fix: ${containerId}`);
+                    console.log(`Found NEW DEFINITIVE container with ReimbursementDemoSeeder pluck fix: ${containerId}`);
                 } else {
                     console.log(`Container ${foundId} is an intermediate version. Skipping and waiting for next deploy...`);
                     oldContainers.push(foundId);
@@ -61,7 +61,7 @@ conn.on('ready', async () => {
     }
     
     if (!containerId) {
-        console.error('Error: Could not find definitive active container after 540 seconds.');
+        console.error('Error: Could not find definitive active container after 900 seconds.');
         conn.end();
         process.exit(1);
     }
@@ -91,7 +91,7 @@ conn.on('ready', async () => {
         }
     }
     
-    console.log('\nAll database operations executed successfully on the definitive container with PDSS key fix!');
+    console.log('\nAll database operations executed successfully on the definitive container with all new modules deployed!');
     conn.end();
     process.exit(0);
 }).on('error', (err) => {

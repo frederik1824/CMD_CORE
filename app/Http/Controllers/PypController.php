@@ -147,8 +147,7 @@ class PypController extends Controller
     {
         $candidatos = PypProgramCandidate::with(["program", "affiliate", "riskGroup"])->orderBy("detected_at", "desc")->get();
         $programas = PypProgram::all();
-        $afiliados = Afiliado::where("estado_afiliacion", "OK")->get();
-        return view("ars.pyp.candidatos", compact("candidatos", "programas", "afiliados"));
+        return view("ars.pyp.candidatos", compact("candidatos", "programas"));
     }
 
     public function enrolarCandidato(Request $request, $id)
@@ -185,7 +184,7 @@ class PypController extends Controller
     public function inscripciones()
     {
         $inscripciones = PypProgramEnrollment::with(["program", "affiliate"])->get();
-        $afiliados = Afiliado::where("estado_afiliacion", "OK")->get();
+        $afiliados = Afiliado::where("estado_afiliacion", "OK")->orderBy("nombres")->limit(15)->get();
         $programas = PypProgram::all();
         return view("ars.pyp.inscripciones", compact("inscripciones", "afiliados", "programas"));
     }

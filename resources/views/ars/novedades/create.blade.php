@@ -65,7 +65,7 @@
                                 id="search_input"
                                 x-model="searchQuery" 
                                 @focus="openDropdown = true" 
-                                @input="openDropdown = true; selectedId = ''"
+                                @input="openDropdown = true; selectedId = ''; fetchAfiliados()"
                                 placeholder="Escriba nombre o cédula para buscar..." 
                                 class="block w-full rounded-xl border border-slate-300 py-2.5 pl-9 pr-8 text-xs text-slate-800 bg-white focus:ring-2 focus:ring-blue-100 focus:border-brand-500 focus:outline-none transition"
                                 autocomplete="off"
@@ -189,23 +189,26 @@
     </form>
 </div>
 
-<script>
-    window.searchAfiliadosData = @json($afiliados->map(fn($af) => ['id' => $af->id, 'nombre' => $af->nombre_completo, 'cedula' => $af->cedula]));
-    
     document.addEventListener('alpine:init', () => {
         Alpine.data('afiliadoSearch', (initialId = '') => ({
             searchQuery: '',
             selectedId: initialId,
             selectedName: '',
             openDropdown: false,
-            afiliadosList: window.searchAfiliadosData || [],
+            afiliadosList: [],
+            fetchAfiliados() {
+                if (this.searchQuery.length < 2) {
+                    this.afiliadosList = [];
+                    return;
+                }
+                fetch(`/core/afiliados/buscar-ajax?q=${encodeURIComponent(this.searchQuery)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        this.afiliadosList = data;
+                    });
+            },
             get filteredAfiliados() {
-                if (!this.searchQuery) return this.afiliadosList;
-                const q = this.searchQuery.toLowerCase();
-                return this.afiliadosList.filter(af => 
-                    af.nombre.toLowerCase().includes(q) || 
-                    af.cedula.includes(q)
-                );
+                return this.afiliadosList;
             },
             selectAfiliado(af) {
                 this.selectedId = af.id;
@@ -217,11 +220,18 @@
                 this.selectedId = '';
                 this.selectedName = '';
                 this.searchQuery = '';
+                this.afiliadosList = [];
             },
             init() {
+                // Sugerencias iniciales vacías
                 if (this.selectedId) {
-                    const found = this.afiliadosList.find(af => af.id == this.selectedId);
-                    if (found) this.selectAfiliado(found);
+                    fetch(`/core/afiliados/buscar-ajax?q=`)
+                        .then(r => r.json())
+                        .then(data => {
+                            this.afiliadosList = data;
+                            const found = this.afiliadosList.find(af => af.id == this.selectedId);
+                            if (found) this.selectAfiliado(found);
+                        });
                 }
             }
         }));

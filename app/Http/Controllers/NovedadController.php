@@ -54,7 +54,7 @@ class NovedadController extends Controller
         }
 
         $tiposNovedad = Catalogo::getByGrupo('tipo_novedad');
-        $afiliados = Afiliado::where('estado_afiliacion', 'OK')->orderBy('nombres')->get();
+        $afiliados = Afiliado::where('estado_afiliacion', 'OK')->orderBy('nombres')->limit(10)->get();
 
         return view('ars.novedades.create', compact('afiliado', 'afiliadoId', 'afiliadoType', 'tiposNovedad', 'afiliados'));
     }

@@ -19,6 +19,36 @@ use Illuminate\Support\Facades\Storage;
 class AfiliadoController extends Controller
 {
     /**
+     * Buscar afiliados por AJAX (para optimizar selectores grandes).
+     */
+    public function buscarAfiliadoAjax(Request $request)
+    {
+        $q = $request->get('q');
+        if (strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $afiliados = Afiliado::where('estado_afiliacion', 'OK')
+            ->where(function ($query) use ($q) {
+                $query->where('nombres', 'like', "%{$q}%")
+                      ->orWhere('primer_apellido', 'like', "%{$q}%")
+                      ->orWhere('segundo_apellido', 'like', "%{$q}%")
+                      ->orWhere('cedula', 'like', "%{$q}%")
+                      ->orWhere('nss', 'like', "%{$q}%");
+            })
+            ->limit(15)
+            ->get(['id', 'nombres', 'primer_apellido', 'segundo_apellido', 'cedula', 'nss'])
+            ->map(fn($af) => [
+                'id' => $af->id,
+                'nombre' => $af->nombre_completo,
+                'cedula' => $af->cedula,
+                'nss' => $af->nss,
+            ]);
+
+        return response()->json($afiliados);
+    }
+
+    /**
      * Listado de titulares con filtros.
      */
     public function titularesIndex(Request $request)

@@ -1,21 +1,14 @@
 @extends('layouts.ars')
 
-@section('title', 'Auditores Médicos Acreditados')
+@section('title', 'Auditores Médicos')
 
 @section('content')
-<div class="space-y-6 font-sans animate-fade-in text-xs">
-    
-    <!-- Encabezado de la página -->
+<div class="space-y-6 font-sans text-xs animate-fade-in">
+    <!-- Encabezado -->
     <div class="flex flex-col md:flex-row md:items-center justify-between pb-5 border-b border-slate-100 gap-4">
         <div>
-            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Auditores Médicos Acreditados</h2>
-            <p class="text-xs text-slate-500 font-medium">Registro y exequátur de médicos auditores.</p>
-        </div>
-        <div class="flex items-center space-x-2">
-            <span class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1.5 text-[10px] font-bold text-blue-700 border border-blue-200">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-600 mr-2 animate-pulse"></span>
-                Ecosistema ARS
-            </span>
+            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Auditores Médicos</h2>
+            <p class="text-xs text-slate-500 font-medium">Bandeja de personal médico responsable de autorizaciones concurrentes, glosas y auditoría clínica.</p>
         </div>
     </div>
 
@@ -23,33 +16,71 @@
     @if(session('success'))
         <div class="bg-emerald-50 border border-emerald-250 text-emerald-800 p-4 rounded-3xl flex items-center space-x-3">
             <span class="material-symbols-outlined text-lg">check_circle</span>
-            <span class="font-semibold">{ session('success') }</span>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="bg-rose-50 border border-rose-250 text-rose-800 p-4 rounded-3xl flex items-center space-x-3">
-            <span class="material-symbols-outlined text-lg">error</span>
-            <span class="font-semibold">{ session('error') }</span>
+            <span class="font-semibold">{{ session('success') }}</span>
         </div>
     @endif
 
-    
-    <div class="bg-white rounded-3xl border border-slate-100 p-6 shadow-xs space-y-4 animate-fade-in">
-        <div class="flex items-center justify-between border-b border-slate-50 pb-2">
-            <h3 class="font-bold text-slate-800">Consola de Demostración y Control Operativo</h3>
-            <span class="text-[10px] font-mono text-slate-400">Core ARS Active View</span>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Registrar Auditor -->
+        <div class="bg-white rounded-3xl border border-slate-100 p-6 shadow-xs space-y-4">
+            <h3 class="font-bold text-slate-800 border-b border-slate-50 pb-2">Registrar Auditor Clínico</h3>
+            <form action="{{ route('ars.prestadores.guardar_auditor') }}" method="POST" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block font-bold text-slate-450 mb-1.5 uppercase tracking-wider text-[9px]">Código Auditor <span class="text-rose-500">*</span></label>
+                    <input type="text" name="auditor_code" placeholder="Ej. AUD-MED-05" class="w-full rounded-full border border-slate-200 bg-slate-50/50 px-4 py-2 focus:bg-white focus:outline-none text-xs" required>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-450 mb-1.5 uppercase tracking-wider text-[9px]">Exequátur Clínico <span class="text-rose-500">*</span></label>
+                    <input type="text" name="exequatur" placeholder="Ej. EX-9838" class="w-full rounded-full border border-slate-200 bg-slate-50/50 px-4 py-2 focus:bg-white focus:outline-none text-xs" required>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-450 mb-1.5 uppercase tracking-wider text-[9px]">Tipo Profesional / Especialidad <span class="text-rose-500">*</span></label>
+                    <select name="professional_type" class="w-full rounded-full border border-slate-200 bg-slate-50/50 px-4 py-2 focus:bg-white focus:outline-none text-xs" required>
+                        <option value="Auditor General">Auditor General</option>
+                        <option value="Auditor de Alto Costo">Auditor de Alto Costo</option>
+                        <option value="Auditor Farmacéutico">Auditor Farmacéutico</option>
+                        <option value="Inspector Clínico">Inspector Clínico</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-[#041e49] text-white rounded-full py-2.5 font-bold hover:bg-slate-800 transition text-xs">Registrar Auditor</button>
+            </form>
         </div>
-        
-        <div class="p-10 text-center text-slate-450 border border-dashed border-slate-200 rounded-3xl space-y-3 bg-slate-50/20">
-            <span class="material-symbols-outlined text-4xl text-[#041e49]">space_dashboard</span>
-            <h4 class="font-bold text-slate-800 text-sm">Visualización del Módulo Core ARS</h4>
-            <p class="text-xs text-slate-500 max-w-md mx-auto">Este submódulo contiene la interfaz del ecosistema completo. Todas las operaciones y transacciones están conectadas directamente a la base de datos persistente SQLite de la ARS.</p>
-            <div class="pt-2">
-                <button onclick="alert('Sección operativa cargada correctamente. Las bitácoras del sistema registran todos sus movimientos.')" class="bg-[#041e49] hover:bg-slate-850 text-white rounded-full px-5 py-2 font-bold shadow-xs transition">Ejecutar Acción Demo</button>
+
+        <!-- Listado de Auditores -->
+        <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-100 p-6 shadow-xs space-y-4">
+            <h3 class="font-bold text-slate-800 border-b border-slate-50 pb-2">Auditores Médicos Registrados</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-100">
+                    <thead class="bg-slate-50 font-bold text-slate-400">
+                        <tr>
+                            <th class="px-4 py-3 text-left">Código Auditor</th>
+                            <th class="px-4 py-3 text-left">Exequátur</th>
+                            <th class="px-4 py-3 text-left">Tipo Especialidad</th>
+                            <th class="px-4 py-3 text-center">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white font-medium">
+                        @forelse($auditores as $aud)
+                            <tr class="hover:bg-slate-50/50 transition">
+                                <td class="px-4 py-3 font-mono text-[#041e49] font-bold">{{ $aud->auditor_code }}</td>
+                                <td class="px-4 py-3 font-semibold text-slate-800 font-mono">{{ $aud->exequatur }}</td>
+                                <td class="px-4 py-3 text-slate-600">{{ $aud->professional_type }}</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold text-emerald-700 border border-emerald-250">
+                                        {{ $aud->status }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-4 py-8 text-center text-slate-400 font-semibold">No se han registrado auditores clínicos.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-
-
 </div>
 @endsection
