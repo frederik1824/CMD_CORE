@@ -23,7 +23,7 @@ conn.on('ready', async () => {
     console.log('Connected to VPS.');
     
     // Lista de contenedores viejos
-    const oldContainers = ['5635b507c9d6', 'b55c389efd47', 'f4eb4652a79f', 'dc81bbf7b9a1'];
+    const oldContainers = ['5635b507c9d6', 'b55c389efd47', 'f4eb4652a79f', 'dc81bbf7b9a1', '78e819912235'];
     let containerId = null;
     let attempts = 0;
     
@@ -67,7 +67,13 @@ conn.on('ready', async () => {
     }
     
     const commands = [
-        `docker exec ${containerId} php artisan migrate --force`,
+        `docker exec ${containerId} rm -f /app/database/database.sqlite /app/database/database.sqlite-wal /app/database/database.sqlite-shm`,
+        `docker exec ${containerId} touch /app/database/database.sqlite`,
+        `docker exec ${containerId} chmod 777 /app/database/database.sqlite`,
+        `docker exec ${containerId} php artisan migrate:fresh --force`,
+        `docker exec ${containerId} php artisan db:seed --force`,
+        `docker exec ${containerId} php artisan db:seed --class=CargaDemoCompletaSeeder --force`,
+        `docker exec ${containerId} php artisan db:seed --class=DemoCoreOperationalSeeder --force`,
         `docker exec ${containerId} php artisan db:seed --class=SimonCatalogsSeeder --force`,
         `docker exec ${containerId} php artisan db:seed --class=RegulatorySchemasSeeder --force`,
         `docker exec ${containerId} php artisan db:seed --class=RegulatoryDemoDataSeeder --force`,
