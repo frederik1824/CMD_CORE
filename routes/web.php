@@ -327,7 +327,7 @@ Route::middleware(['auth'])->prefix('core')->name('ars.')->group(function () {
     Route::post('/promotores/campanas', [\App\Http\Controllers\PromotoresController::class, 'guardarCampana'])->name('promotores.guardar_campana');
     Route::get('/promotores/esquemas-comisiones-campana', [\App\Http\Controllers\PromotoresController::class, 'esquemasCampana'])->name('promotores.esquemas_campana');
     Route::get('/promotores/calculo-comisiones-campana', [\App\Http\Controllers\PromotoresController::class, 'calculoCampana'])->name('promotores.calculo_campana');
-    Route::post('/promotores/comisiones/calcular', [\App\Http\Controllers\PromotoresController::class, 'calcularComisiones'])->name('promotores.calcular_commisiones');
+    Route::post('/promotores/comisiones/calcular', [\App\Http\Controllers\PromotoresController::class, 'calcularComisiones'])->name('promotores.calcular_comisiones');
     Route::get('/promotores/tipos-gestion', [\App\Http\Controllers\PromotoresController::class, 'tiposGestion'])->name('promotores.tipos_gestion');
     Route::get('/promotores/esquemas-comisiones-gestion', [\App\Http\Controllers\PromotoresController::class, 'esquemasGestion'])->name('promotores.esquemas_gestion');
     Route::get('/promotores/calculo-comisiones-gestion', [\App\Http\Controllers\PromotoresController::class, 'calculoGestion'])->name('promotores.calculo_gestion');
